@@ -102,11 +102,13 @@ class AgentState(TypedDict, total=False):
     final: str
     last_prompt: str
     cost_usd: float
+    token_count: int
     events: list[dict]
 
 
-def _cost(state: AgentState, usage: dict) -> float:
-    return round(state.get("cost_usd", 0.0) + usage["usd"], 6)
+def _usage_update(state: AgentState, usage: dict) -> dict:
+    return {"cost_usd": round(state.get("cost_usd", 0.0) + usage["usd"], 6),
+            "token_count": state.get("token_count", 0) + usage.get("tokens", 0)}
 
 
 @traceable(name="route_node")
@@ -115,7 +117,7 @@ async def route_node(state: AgentState, deps: SupervisorDeps) -> dict:
     result, usage = deps.fast_llm.route(state["query"])
     event = {"type": "RouteDecided", "route": result["route"]}
     return {"route": result["route"], "needs_analysis": result["needs_analysis"],
-            "cost_usd": _cost(state, usage),
+            **_usage_update(state, usage),
             "events": state.get("events", []) + [event]}
 
 
@@ -131,7 +133,7 @@ async def chat_answer_node(state: AgentState, deps: SupervisorDeps) -> dict:
         state["query"], state.get("history", []),
         on_token=lambda piece: writer({"type": "AnswerToken", "delta": piece}))
     return {"final": reply, "last_prompt": usage.get("prompt"),
-            "cost_usd": _cost(state, usage),
+            **_usage_update(state, usage),
             "events": state["events"] + [{"type": "Finalize", "pipeline": "chat-direct"}]}
 
 
@@ -153,7 +155,7 @@ async def plan_node(state: AgentState, deps: SupervisorDeps) -> dict:
     event = {"type": "PlanCreated", "task_count": len(result["tasks"]),
              "targets": targets}
     return {"tasks": result["tasks"], "needs_analysis": result["needs_analysis"],
-            "cost_usd": _cost(state, usage), "events": state["events"] + [event]}
+            **_usage_update(state, usage), "events": state["events"] + [event]}
 
 
 @traceable(name="gate_node")
@@ -285,7 +287,7 @@ async def analysis_node(state: AgentState, deps: SupervisorDeps) -> dict:
     collected = state.get("collected", []) + [{"source": "analysis", "data": summary}]
     event = {"type": "AnalysisCompleted", "length": len(summary)}
     return {"tasks": new_tasks, "collected": collected,
-            "cost_usd": _cost(state, usage), "events": state["events"] + [event]}
+            **_usage_update(state, usage), "events": state["events"] + [event]}
 
 
 @traceable(name="write_node")
@@ -303,7 +305,7 @@ async def write_node(state: AgentState, deps: SupervisorDeps) -> dict:
         on_token=lambda piece: writer(
             {"type": "AnswerToken", "attempt": attempt, "delta": piece}))
     return {"draft": draft, "last_prompt": usage.get("prompt"),
-            "cost_usd": _cost(state, usage),
+            **_usage_update(state, usage),
             "events": state["events"] + [{"type": "DraftWritten", "attempt": attempt,
                                           "length": len(draft)}]}
 

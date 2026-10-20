@@ -2,7 +2,8 @@
 import json
 import unittest
 from types import SimpleNamespace
-from unittest.mock import AsyncMock, Mock
+from contextlib import nullcontext
+from unittest.mock import AsyncMock, Mock, patch
 
 from fastapi.testclient import TestClient
 
@@ -138,6 +139,22 @@ class TargetCheckApiTests(unittest.TestCase):
         events = self.stream_events("안녕, 너는 누구야?", "chat-stream")
         self.assertTrue(any(e["type"] == "AnswerToken" for e in events))
         self.assertTrue(any(e["type"] == "FinalAnswer" for e in events))
+
+    def test_stream_trace_keeps_admin_data_out_of_public_reply(self):
+        trace_record = SimpleNamespace(id="test-trace", add_outputs=Mock())
+        reply = "1) CPU 91%입니다. 2) 로그는 미수집으로 확인되지 않았습니다. 3) 지속시간 확인 후 판단하세요."
+        self.state.deps.quality_llm.write = AsyncMock(
+            return_value=(reply, {"usd": 0, "tokens": 15, "prompt": "관리자 전용 프롬프트"}))
+        with patch("server.trace", return_value=nullcontext(trace_record)):
+            events = self.stream_events("payments-service CPU 급증 진단", "traced-stream")
+        final = next(e for e in events if e["type"] == "FinalAnswer")
+        self.assertNotIn("prompt", final)
+        self.assertNotIn("관리자 전용 프롬프트", str(events))
+        record = trace_record.add_outputs.call_args.args[0]
+        self.assertEqual(record["last_prompt"], "관리자 전용 프롬프트")
+        self.assertEqual(record["reply"], final["reply"])
+        self.assertGreaterEqual(record["metadata"]["token_count"], 15)
+        self.assertTrue(record["metadata"]["validation_passed"])
 
     def test_repeated_bad_percentages_finish_without_passing_invalid_draft(self):
         invalid = "1) CPU 99.9%로 장애가 발생했습니다. 2) 로그를 확인하세요. 3) 지속시간을 확인하세요."

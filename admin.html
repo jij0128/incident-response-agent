@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>요청 모니터링 · Incident Response Agent</title>
+<style>
+:root{color-scheme:dark;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;background:#161823;color:#e6e9f3}
+*{box-sizing:border-box}body{margin:0}button,input{font:inherit}a{color:#9ca8ff}button{border:0;border-radius:8px;padding:10px 16px;background:#727bf3;color:white;cursor:pointer}button:disabled{opacity:.5;cursor:wait}input{background:#161823;border:1px solid #42495e;color:inherit;border-radius:8px;padding:10px;min-width:250px}button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid #8bd9d0;outline-offset:3px}
+header{border-bottom:1px solid #33394b;background:#202432;padding:24px 32px;display:flex;justify-content:space-between;align-items:center;gap:20px}h1{font-size:24px;margin:5px 0}.eyebrow{font-size:11px;letter-spacing:2px;color:#8bd9d0}header p,.muted{color:#a4aec5;font-size:13px}main{max-width:1450px;margin:auto;padding:24px 32px}.login{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:20px}.error{padding:14px;background:#472c3b;border:1px solid #9e6079;border-radius:8px}.note{font-size:13px;color:#b2bdd2;line-height:1.6}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:20px 0}.card{background:#202432;border:1px solid #33394b;border-radius:12px;padding:20px}.card span{display:block;color:#a4aec5;font-size:13px}.card strong{display:block;font-size:29px;margin-top:8px;font-variant-numeric:tabular-nums}.grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);gap:20px}.panel{background:#202432;border:1px solid #33394b;border-radius:12px;overflow:hidden}.panel h2{font-size:16px;margin:0;padding:18px;border-bottom:1px solid #33394b}.scroll{overflow:auto}table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:14px 12px;border-bottom:1px solid #33394b;vertical-align:top}th{color:#a4aec5;font-weight:500;white-space:nowrap}tr.selected{background:#303650}.query{min-width:180px;max-width:280px;word-break:break-word}.rowbutton{font-size:12px;background:#343c58;padding:6px 10px;margin-top:6px}.badge{display:inline-block;color:#8bd9d0;white-space:nowrap}.bad{color:#ffadb7}.detail{padding:18px}.detail h3{font-size:13px;color:#a4aec5}pre{white-space:pre-wrap;word-break:break-word;font-size:12px;line-height:1.65;background:#161823;border-radius:8px;padding:14px;max-height:340px;overflow:auto}.empty{text-align:center;padding:40px 18px;color:#a4aec5;line-height:1.8}.event{border-left:2px solid #5d6992;padding-left:12px;margin:14px 0;font-size:13px}.event small{display:block;color:#a4aec5;margin-top:5px}details summary{cursor:pointer;color:#aeb7ff;margin-top:18px}[v-cloak]{display:none}@media(max-width:1050px){.grid{grid-template-columns:1fr}}@media(max-width:650px){header,main{padding:18px}.cards{grid-template-columns:1fr}input{min-width:0;flex:1}}
+</style>
+</head>
+<body>
+<div id="app" v-cloak>
+<header><div><div class="eyebrow">INCIDENT RESPONSE AGENT / ADMIN</div><h1>요청 모니터링</h1><p>LangSmith에 기록된 요청 흐름과 검증 결과</p></div><a href="/">채팅으로 돌아가기</a></header>
+<main>
+  <form class="login" @submit.prevent="connect"><label for="token">관리자 접근 키</label><input id="token" type="password" v-model="token" autocomplete="off" placeholder=".env의 ADMIN_API_TOKEN"><button :disabled="loading || !token">{{ loading ? '불러오는 중…' : '조회 / 새로고침' }}</button><button v-if="connected" type="button" @click="logout">연결 해제</button></form>
+  <p class="error" v-if="error" role="alert">{{ error }}</p>
+  <p class="note" v-if="!connected">관리자 키로 인증한 뒤 기록을 조회하세요. 키는 이 화면의 메모리에서만 사용합니다.</p>
+  <template v-if="connected">
+    <p class="note">프로젝트: {{ project }} · 최근 {{ runs.length }}건 · {{ updated }} 갱신</p>
+    <p class="error" v-if="!tracing">현재 추적이 꺼져 있습니다. .env에서 LANGCHAIN_TRACING_V2=true로 설정하고 백엔드를 재시작해야 새 요청이 기록됩니다.</p>
+    <div class="cards"><div class="card"><span>조회한 요청</span><strong>{{ runs.length }}건</strong></div><div class="card"><span>완료 요청 평균 처리 시간</span><strong>{{ averageTime }}</strong></div><div class="card"><span>사용 토큰 합계 · {{ tokenRecords }}건 집계</span><strong>{{ totalTokens }}</strong></div></div>
+    <p class="note">Ollama/OpenAI 토큰은 백엔드 응답값을 누적하고 Fake는 추정합니다. 추정 비용은 코드의 가상 단가 기준이며 실제 청구 금액과 다릅니다. 전송 직후 기록이 보이지 않으면 잠시 후 새로고침하세요.</p>
+    <div class="grid">
+      <section class="panel"><h2>최근 요청</h2><div v-if="!runs.length" class="empty">아직 요청 기록이 없습니다.<br>채팅에서 질문을 보낸 뒤 다시 조회하세요.</div><div v-else class="scroll"><table><thead><tr><th>시각 / 질문</th><th>처리 / 토큰</th><th>검증</th></tr></thead><tbody><tr v-for="run in runs" :key="run.id" :class="{selected: selectedId === run.id}"><td class="query"><div class="muted">{{ time(run.start_time) }}</div><p>{{ run.query || '(질문 기록 없음)' }}</p><button class="rowbutton" :disabled="detailLoading" @click="inspect(run.id)">상세 보기</button></td><td><span :class="['badge', {bad: run.status === 'error'}]">{{ status(run.status) }}</span><p>{{ ms(run.duration_ms) }}</p><span class="muted">{{ run.tokens ?? '기록 없음' }} 토큰</span></td><td>{{ validation(run) }}<p class="muted">{{ run.validation_attempts == null ? '기록 없음' : run.validation_attempts + '회 검증' }}</p></td></tr></tbody></table></div></section>
+      <section class="panel"><h2>요청 상세</h2><div class="empty" v-if="detailLoading">상세 기록을 불러오는 중…</div><div v-else-if="!detail" class="empty">요청의 상세 보기를 선택하세요.</div><div v-else class="detail"><p class="note">{{ detail.backend || '백엔드 기록 없음' }} · 추정 비용 {{ detail.estimated_cost_usd == null ? '기록 없음' : '$' + detail.estimated_cost_usd }}</p><h3>최종 답변</h3><pre>{{ detail.reply || '답변 기록 없음' }}</pre><h3>검증 이력</h3><div class="event" v-for="(event,i) in validations" :key="i">시도 {{ event.attempt }} · {{ event.verdict }}<small v-if="event.issues?.length">{{ event.issues.join(' ') }}</small></div><p class="muted" v-if="!validations.length">검증 단계가 없거나 기록이 없습니다.</p><details><summary>실행 흐름 보기</summary><div v-for="node in detail.nodes" :key="node.id" :style="{paddingLeft: Math.min(node.depth,8)*10+'px'}" class="event">{{ node.name }} <span v-if="node.error" class="bad">오류</span><small>{{ node.type }} · {{ ms(node.duration_ms) }}</small></div><p class="muted" v-if="detail.nodes_truncated">처음 200개 실행만 표시합니다.</p></details><details><summary>LLM에 전달된 최종 프롬프트</summary><pre>{{ detail.prompt || '프롬프트 기록 없음' }}</pre></details></div></section>
+    </div>
+  </template>
+</main>
+</div>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script>
+const {createApp, ref, computed} = Vue;
+createApp({setup(){
+  const token=ref(''), connected=ref(false), loading=ref(false), detailLoading=ref(false), error=ref('');
+  const runs=ref([]), detail=ref(null), selectedId=ref(null), project=ref(''), tracing=ref(false), updated=ref('');
+  let generation=0;
+  const ms=v=>v==null?'기록 없음':(v/1000).toFixed(2)+'초';
+  const time=v=>new Date(v).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'});
+  const status=v=>({completed:'완료',running:'진행 중',error:'오류'}[v] || v);
+  const validation=r=>r.route==='clarification'?'대상 확인 요청':r.validation_passed===true?'통과':r.validation_passed===false?'실패 / 상태 안내':'해당 없음';
+  const completed=computed(()=>runs.value.filter(r=>r.status==='completed' && r.duration_ms!=null));
+  const averageTime=computed(()=>completed.value.length?ms(completed.value.reduce((s,r)=>s+r.duration_ms,0)/completed.value.length):'—');
+  const tokenRecords=computed(()=>runs.value.filter(r=>r.tokens!=null).length);
+  const totalTokens=computed(()=>tokenRecords.value?runs.value.reduce((s,r)=>s+(r.tokens ?? 0),0).toLocaleString():'—');
+  const validations=computed(()=>(detail.value?.events || []).filter(e=>e.type==='Validation'));
+  async function request(path,key){const response=await fetch(path,{headers:{'X-Admin-Token':key},cache:'no-store'});const data=await response.json();if(!response.ok)throw new Error(typeof data.detail==='string'?data.detail:'기록을 조회하지 못했습니다.');return data;}
+  function logout(){generation++;token.value='';connected.value=false;runs.value=[];detail.value=null;selectedId.value=null;error.value='';loading.value=false;detailLoading.value=false;}
+  async function connect(){const current=++generation;loading.value=true;detailLoading.value=false;error.value='';detail.value=null;selectedId.value=null;try{const data=await request('/admin/api/runs?limit=20',token.value);if(current!==generation)return;runs.value=data.runs;project.value=data.project;tracing.value=data.tracing_enabled;updated.value=time(new Date());connected.value=true;}catch(e){if(current===generation){connected.value=false;runs.value=[];error.value=e.message;}}finally{if(current===generation)loading.value=false;}}
+  async function inspect(id){const current=generation;detailLoading.value=true;detail.value=null;selectedId.value=id;error.value='';try{const data=await request('/admin/api/runs/'+encodeURIComponent(id),token.value);if(current===generation)detail.value=data;}catch(e){if(current===generation)error.value=e.message;}finally{if(current===generation)detailLoading.value=false;}}
+  return {token,connected,loading,detailLoading,error,runs,detail,selectedId,project,tracing,updated,ms,time,status,validation,averageTime,totalTokens,tokenRecords,validations,connect,logout,inspect};
+}}).mount('#app');
+</script>
+</body>
+</html>

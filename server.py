@@ -18,11 +18,12 @@ load_dotenv()   # LANGCHAIN_TRACING_V2 / API_KEY / PROJECT — import보다 먼�
 
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
-from langsmith import traceable
+from langsmith import trace, traceable
 from langsmith.run_helpers import get_current_run_tree
 from pydantic import BaseModel
 
 from agent.deps import SupervisorDeps
+from agent.admin import router as admin_router
 from agent.fake_llm import FastLLM, QualityLLM
 from agent.graph import build_graph
 from agent.mcp_client import MCPClient
@@ -88,6 +89,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+app.include_router(admin_router)
 
 
 @app.get("/health")
@@ -116,6 +118,7 @@ def _metadata(result: dict, run_id: str | None) -> dict:
         "validation_attempts": result.get("validation_attempts", 0),
         "validation_passed": result.get("validation_passed"),
         "cost_usd": result.get("cost_usd", 0.0),
+        "token_count": result.get("token_count", 0),
         "llm_backend": app.state.llm_backend,
         "supervisor_version": app.state.deps.version,
         "instance_id": app.state.instance_id,
@@ -136,6 +139,10 @@ async def _handle_chat(message: str, thread_id: str) -> tuple[dict, str | None]:
     deps.session_store.append(thread_id, "user", message)
     deps.session_store.append(thread_id, "assistant", result["final"])
     rt = get_current_run_tree()
+    if rt:
+        rt.add_outputs({"reply": result["final"], "events": result.get("events", []),
+                        "last_prompt": result.get("last_prompt"),
+                        "metadata": _metadata(result, str(rt.id))})
     return result, (str(rt.id) if rt else None)
 
 
@@ -155,17 +162,17 @@ async def chat_stream(message: str, thread_id: str = "default"):
     """
     deps = app.state.deps
 
-    async def gen():
+    async def run_stream(trace_run):
         history = deps.session_store.load(thread_id)
         if deps.version != "v2":
             result = await run_v1(deps, message, thread_id, history)
             for ev in result["events"]:
                 yield f"data: {json.dumps(ev, ensure_ascii=False)}\n\n"
-            yield f"data: {json.dumps({'type': 'FinalAnswer', 'reply': result['final']}, ensure_ascii=False)}\n\n"
+            final = result["final"]
         else:
             seen = 0
             final = ""
-            last_prompt = None   # finalize까지 살아남은 최종 write/chat 호출의 실제 프롬프트
+            result = {"events": [], "cost_usd": 0.0, "token_count": 0}
             # stream_mode를 리스트로 주면 (mode, payload) 튜플이 나온다 — "updates"는
             # 노드가 끝날 때마다의 상태 델타, "custom"은 write_node/chat_answer_node가
             # get_stream_writer()로 실행 중에 즉시 흘려보내는 토큰(AnswerToken) 이벤트다.
@@ -180,6 +187,7 @@ async def chat_stream(message: str, thread_id: str = "default"):
                     # 예: 등록된 시스템을 통과시키는 target_check. 전송할 내용이 없다.
                     if delta is None:
                         continue
+                    result.update(delta)
                     for ev in (delta.get("events") or [])[seen:]:
                         ev = {**ev, "node": node_name}
                         yield f"data: {json.dumps(ev, ensure_ascii=False)}\n\n"
@@ -187,12 +195,19 @@ async def chat_stream(message: str, thread_id: str = "default"):
                         seen = len(delta["events"])
                     if delta.get("final"):
                         final = delta["final"]
-                    if delta.get("last_prompt"):
-                        last_prompt = delta["last_prompt"]
-            yield f"data: {json.dumps({'type': 'FinalAnswer', 'reply': final, 'prompt': last_prompt}, ensure_ascii=False)}\n\n"
-            deps.session_store.append(thread_id, "user", message)
-            deps.session_store.append(thread_id, "assistant", final)
+        deps.session_store.append(thread_id, "user", message)
+        deps.session_store.append(thread_id, "assistant", final)
+        trace_run.add_outputs({"reply": final, "events": result.get("events", []),
+                               "last_prompt": result.get("last_prompt"),
+                               "metadata": _metadata(result, str(trace_run.id))})
+        # 내부 프롬프트는 관리자 추적에만 남기고 사용자 응답에는 포함하지 않는다.
+        yield f"data: {json.dumps({'type': 'FinalAnswer', 'reply': final}, ensure_ascii=False)}\n\n"
         yield "data: [DONE]\n\n"
+
+    async def gen():
+        with trace("chat_request_stream", inputs={"message": message, "thread_id": thread_id}) as rt:
+            async for item in run_stream(rt):
+                yield item
 
     return StreamingResponse(gen(), media_type="text/event-stream")
 

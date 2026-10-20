@@ -13,6 +13,7 @@ server.py는 평소처럼(fake/ollama/openai 아무 백엔드로나) 8100에 미
     python3 web_demo_server.py        # http://localhost:8600 에서 채팅 화면 오픈
 """
 from pathlib import Path
+from uuid import UUID
 
 import httpx
 import uvicorn
@@ -28,6 +29,34 @@ app = FastAPI()
 @app.get("/")
 async def index():
     return FileResponse(HERE / "web_chat.html")
+
+
+@app.get("/admin")
+async def admin_page():
+    return FileResponse(HERE / "admin.html")
+
+
+async def admin_proxy(req: Request, path: str, params=None):
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            upstream = await client.get(
+                f"{BACKEND}/admin/{path}", params=params,
+                headers={"X-Admin-Token": req.headers.get("X-Admin-Token", "")})
+        return JSONResponse(upstream.json(), status_code=upstream.status_code,
+                            headers={"Cache-Control": "no-store"})
+    except (httpx.RequestError, ValueError):
+        return JSONResponse({"detail": "관리자 서버에 연결하지 못했습니다. 백엔드 상태를 확인해주세요."},
+                            status_code=502, headers={"Cache-Control": "no-store"})
+
+
+@app.get("/admin/api/runs")
+async def admin_runs(req: Request, limit: int = 20):
+    return await admin_proxy(req, "runs", {"limit": limit})
+
+
+@app.get("/admin/api/runs/{run_id}")
+async def admin_run_detail(req: Request, run_id: UUID):
+    return await admin_proxy(req, f"runs/{run_id}")
 
 
 @app.get("/health")
