@@ -1,6 +1,6 @@
 """v2 Supervisor — 실제 langgraph.StateGraph (Wave 4·5·6·7·8·10b·15 통합).
 
-route → (chat 직행 | incident 파이프라인)
+target_check → (미등록 대상 확인 요청 | route → chat/incident)
 incident: plan(MCP Prompt 절차 반영) → gate(권위 게이트) → research(가드+병렬+재시도)
           → replan_check(부족 시 gap task 후 재조사) → analysis(needs_analysis=True일 때만
           실제 실행) → write → validate(반려 시 재작성) → finalize
@@ -10,6 +10,7 @@ incident: plan(MCP Prompt 절차 반영) → gate(권위 게이트) → research
 """
 import asyncio
 import json
+import re
 import time
 from functools import partial
 from pathlib import Path
@@ -35,6 +36,40 @@ def _load_known_systems() -> set[str]:
 
 
 KNOWN_SYSTEMS = _load_known_systems()
+
+
+def _unknown_systems(query: str) -> list[str]:
+    """명시된 서비스/호스트 식별자를 검사한다. 한국어 조사도 이름 경계로 허용한다.
+
+    현재 데이터의 명명 규칙(-service, -숫자)을 대상으로 한다. 이름이 없는 요청의
+    기존 동작은 유지하며, 일반 영단어나 read-only 같은 표현은 대상으로 보지 않는다.
+    """
+    identifiers = re.findall(
+        r"(?<![A-Za-z0-9_-])[A-Za-z][A-Za-z0-9]*(?:[-_][A-Za-z0-9]+)+"
+        r"(?![A-Za-z0-9_-])", query)
+    return list(dict.fromkeys(
+        name for name in identifiers
+        if (re.search(r"[-_]service(?:[-_]|$)", name, re.IGNORECASE)
+            or re.search(r"[-_]\d+$", name))
+        and name not in KNOWN_SYSTEMS
+    ))
+
+
+@traceable(name="target_check_node")
+async def target_check_node(state: "AgentState", deps: SupervisorDeps) -> dict:
+    """LLM·MCP 호출 전에 미등록 대상을 다른 시스템으로 바꿔 진단하는 것을 막는다."""
+    unknown = _unknown_systems(state["query"])
+    if not unknown:
+        return {}
+    names = ", ".join(f"`{name}`" for name in unknown)
+    return {
+        "route": "clarification", "needs_analysis": False,
+        "final": f"{names}는 등록된 모니터링 대상에서 찾을 수 없습니다. 시스템명을 확인해주세요.",
+        "events": state.get("events", []) + [
+            {"type": "TargetClarification", "unknown_systems": unknown},
+            {"type": "Finalize", "pipeline": "target-clarification"},
+        ],
+    }
 
 
 def _extract_system_name(query: str) -> str:
@@ -310,6 +345,7 @@ def _after_validate(state: AgentState) -> str:
 def build_graph(deps: SupervisorDeps):
     g = StateGraph(AgentState)
     node = lambda fn: partial(fn, deps=deps)   # Wave 13 — 명시적 의존성 주입
+    g.add_node("target_check", node(target_check_node))
     g.add_node("route", node(route_node))
     g.add_node("chat_answer", node(chat_answer_node))
     g.add_node("plan", node(plan_node))
@@ -321,7 +357,12 @@ def build_graph(deps: SupervisorDeps):
     g.add_node("validate", node(validate_node))
     g.add_node("finalize", node(finalize_node))
 
-    g.set_entry_point("route")
+    g.set_entry_point("target_check")
+    g.add_conditional_edges(
+        "target_check",
+        lambda state: "clarification" if state.get("route") == "clarification" else "route",
+        {"clarification": END, "route": "route"},
+    )
     g.add_conditional_edges("route", _after_route,
                             {"chat_answer": "chat_answer", "plan": "plan"})
     g.add_edge("chat_answer", END)

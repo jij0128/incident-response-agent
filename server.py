@@ -175,6 +175,10 @@ async def chat_stream(message: str, thread_id: str = "default"):
                     yield f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
                     continue
                 for node_name, delta in payload.items():
+                    # 상태 변경이 없는 노드는 LangGraph updates에서 None으로 전달된다.
+                    # 예: 등록된 시스템을 통과시키는 target_check. 전송할 내용이 없다.
+                    if delta is None:
+                        continue
                     for ev in (delta.get("events") or [])[seen:]:
                         ev = {**ev, "node": node_name}
                         yield f"data: {json.dumps(ev, ensure_ascii=False)}\n\n"
