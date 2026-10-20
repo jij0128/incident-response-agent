@@ -1,0 +1,825 @@
+{
+  "experiment": "real_ollama_graph_fixed_mcp",
+  "generated_at": "2026-10-20T13:55:20+09:00",
+  "baseline_commit": "0672d141ebd1406fb73ab9b0f43423e6a081d902",
+  "current_head": "279667a4b3417c0989d2bd1506af85a2e5ca7c23",
+  "fast_model": "qwen3:0.6b",
+  "quality_model": "qwen3:8b",
+  "models": {
+    "qwen3:0.6b": {
+      "name": "qwen3:0.6b",
+      "model": "qwen3:0.6b",
+      "modified_at": "2026-10-20T11:21:29.156970973+09:00",
+      "size": 522653767,
+      "digest": "7df6b6e09427a769808717c0a93cadc4ae99ed4eb8bf5ca557c90846becea435",
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "qwen3",
+        "families": [
+          "qwen3"
+        ],
+        "parameter_size": "751.63M",
+        "quantization_level": "Q4_K_M",
+        "context_length": 40960,
+        "embedding_length": 1024,
+        "runner": "ggml"
+      },
+      "capabilities": [
+        "completion",
+        "tools",
+        "thinking"
+      ]
+    },
+    "qwen3:8b": {
+      "name": "qwen3:8b",
+      "model": "qwen3:8b",
+      "modified_at": "2026-10-19T15:52:03.781351526+09:00",
+      "size": 5225387792,
+      "digest": "a4c87079f47ffc2c3d7a1e7bc135dd1af090a8aa6beab132e41c5dbaea9fce7e",
+      "details": {
+        "parent_model": "qwen3-8b.gguf",
+        "format": "gguf",
+        "family": "qwen3",
+        "families": [
+          "qwen3"
+        ],
+        "parameter_size": "8.2B",
+        "quantization_level": "Q4_K_M",
+        "context_length": 40960,
+        "embedding_length": 4096,
+        "runner": "llamacpp"
+      },
+      "capabilities": [
+        "completion",
+        "tools",
+        "thinking"
+      ]
+    }
+  },
+  "repeats": 1,
+  "case_order": [
+    "cpu_incident",
+    "unknown_service",
+    "mixed_targets"
+  ],
+  "cases_sha256": "4a7bd0e0618594cc868554a5127f9c320caa2237089eb8315283ea14df9c2665",
+  "script_sha256": "82527f021e985676fbcc7dda04e27b55c1e1b78feb8c3d2e87cc149460360363",
+  "runs": [
+    {
+      "case_id": "cpu_incident",
+      "query": "payments-service 결제 응답이 느려지고 CPU가 치솟았어요, 원인 확인해주세요.",
+      "requested_systems": [
+        "payments-service"
+      ],
+      "unregistered": false,
+      "manual_review_criteria": [
+        "현재 CPU와 알림 수치를 구분하는가",
+        "수집하지 않은 로그를 확인한 사실처럼 말하지 않는가",
+        "CPU 지속 여부 미확인을 유지하고 확장을 조건부로 제안하는가"
+      ],
+      "version": "baseline",
+      "repeat": 1,
+      "elapsed_seconds": 32.1563,
+      "error": null,
+      "model_calls": [
+        {
+          "role": "fast",
+          "method": "route",
+          "model": "ollama:qwen3:0.6b",
+          "elapsed_seconds": 2.6448,
+          "tokens": 469,
+          "estimated_cost_usd": 7e-05,
+          "output": {
+            "route": "incident",
+            "needs_analysis": true
+          },
+          "prompt": null
+        },
+        {
+          "role": "fast",
+          "method": "plan",
+          "model": "ollama:qwen3:0.6b",
+          "elapsed_seconds": 1.6664,
+          "tokens": 609,
+          "estimated_cost_usd": 9.1e-05,
+          "output": {
+            "needs_analysis": false,
+            "tasks": [
+              {
+                "id": "task-0",
+                "agent": "research",
+                "kind": "monitoring",
+                "target": "payments-service",
+                "status": "pending"
+              },
+              {
+                "id": "task-analysis",
+                "agent": "analysis",
+                "kind": "pattern-analysis",
+                "status": "pending"
+              }
+            ]
+          },
+          "prompt": null
+        },
+        {
+          "role": "quality",
+          "method": "write",
+          "model": "ollama:qwen3:8b",
+          "elapsed_seconds": 27.1183,
+          "tokens": 949,
+          "estimated_cost_usd": 0.004745,
+          "output": "1) 모니터링 상태 확인: payments-service의 CPU 사용률 91.0% (경계값 80% 초과), 메모리 55.0% 사용 중. 알림 2건 발생('CPU 91% (threshold 80%)', 'payments-service-3 instance responding slow').  \n2) 특정 요청 패턴 확인: 최근 로그에서 반복 호출 또는 배치 작업 중복 실행 등이 원인인지 분석 필요.  \n3) 인스턴스 확장: CPU 90% 이상 지속 시 payments-service-3 인스턴스에 오토스케일링 그룹에서 1대 추가하여 부하 분산.",
+          "prompt": "[SYSTEM]\n당신은 ICT 운영 보고 작성자다. 수집된 사실만 사용해 한국어로 간결한 대응 보고를 작성하라. 반드시 '1) ... 2) ... 3) ...' 형식의 번호 절차로 답하고, 수치는 수집된 값을 그대로 인용하라.\n\n[USER]\n## 사용자 요청\npayments-service 결제 응답이 느려지고 CPU가 치솟았어요, 원인 확인해주세요.\n\n## 수집된 사실\n- 모니터링 payments-service: 상태=degraded, CPU 91.0%, 메모리 55.0%, 알림 2건 ['CPU 91% (threshold 80%)', 'payments-service-3 instance responding slow']\n- runbook 발췌:\n# Runbook: CPU 급증 대응 절차\n\n1. get_monitoring_status로 CPU 사용률과 최근 배포/트래픽 변화 시점을 확인한다.\n2. 반복 호출, 배치 작업 중복 실행 같은 특정 요청 패턴이 원인인지 최근 로그에서 확인한다.\n3. CPU가 90%를 넘고 지속되면 해당 인스턴스를 오토스케일링 그룹에서 한 대 더 띄워 부하를 분산한다.\n4. 급증이 특정 배포 직후 시작됐다면 직전 배포를 롤백하고 원인 분석은 별도로 진행한다.\n5. 정상화 후 프로파일링 결과를 바탕으로 핫스팟 코드를 식별해 최적화 작업을 등록한다."
+        }
+      ],
+      "total_tokens": 2027,
+      "estimated_cost_usd": 0.004906,
+      "monitoring_targets": [
+        "payments-service"
+      ],
+      "route": "incident",
+      "validation_attempts": 1,
+      "validation_passed": null,
+      "final": "1) 모니터링 상태 확인: payments-service의 CPU 사용률 91.0% (경계값 80% 초과), 메모리 55.0% 사용 중. 알림 2건 발생('CPU 91% (threshold 80%)', 'payments-service-3 instance responding slow').  \n2) 특정 요청 패턴 확인: 최근 로그에서 반복 호출 또는 배치 작업 중복 실행 등이 원인인지 분석 필요.  \n3) 인스턴스 확장: CPU 90% 이상 지속 시 payments-service-3 인스턴스에 오토스케일링 그룹에서 1대 추가하여 부하 분산.",
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "incident"
+        },
+        {
+          "type": "PlanCreated",
+          "task_count": 2,
+          "targets": [
+            "payments-service"
+          ]
+        },
+        {
+          "type": "GateApplied",
+          "removed_analysis_tasks": 1
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-0",
+          "source": "monitoring",
+          "target": "payments-service",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 0,
+          "is_sufficient": false,
+          "gap_task": "task-gap-runbook",
+          "target": "cpu-spike"
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook",
+          "source": "runbook",
+          "target": "cpu-spike",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 1,
+          "is_sufficient": true
+        },
+        {
+          "type": "AnalysisSkipped",
+          "reason": "analysis task 0개"
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 1,
+          "length": 304
+        },
+        {
+          "type": "Validation",
+          "attempt": 1,
+          "verdict": "합격"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "incident-v2"
+        }
+      ],
+      "collected": [
+        {
+          "source": "monitoring",
+          "data": {
+            "system_name": "payments-service",
+            "status": "degraded",
+            "cpu_percent": 91.0,
+            "memory_percent": 55.0,
+            "last_checked": "2026-10-20T00:00:00+00:00",
+            "alerts": [
+              "CPU 91% (threshold 80%)",
+              "payments-service-3 instance responding slow"
+            ]
+          }
+        },
+        {
+          "source": "runbook",
+          "data": "# Runbook: CPU 급증 대응 절차\n\n1. get_monitoring_status로 CPU 사용률과 최근 배포/트래픽 변화 시점을 확인한다.\n2. 반복 호출, 배치 작업 중복 실행 같은 특정 요청 패턴이 원인인지 최근 로그에서 확인한다.\n3. CPU가 90%를 넘고 지속되면 해당 인스턴스를 오토스케일링 그룹에서 한 대 더 띄워 부하를 분산한다.\n4. 급증이 특정 배포 직후 시작됐다면 직전 배포를 롤백하고 원인 분석은 별도로 진행한다.\n5. 정상화 후 프로파일링 결과를 바탕으로 핫스팟 코드를 식별해 최적화 작업을 등록한다.\n"
+        }
+      ],
+      "manual_review": "미검토"
+    },
+    {
+      "case_id": "cpu_incident",
+      "query": "payments-service 결제 응답이 느려지고 CPU가 치솟았어요, 원인 확인해주세요.",
+      "requested_systems": [
+        "payments-service"
+      ],
+      "unregistered": false,
+      "manual_review_criteria": [
+        "현재 CPU와 알림 수치를 구분하는가",
+        "수집하지 않은 로그를 확인한 사실처럼 말하지 않는가",
+        "CPU 지속 여부 미확인을 유지하고 확장을 조건부로 제안하는가"
+      ],
+      "version": "current",
+      "repeat": 1,
+      "elapsed_seconds": 40.0612,
+      "error": null,
+      "model_calls": [
+        {
+          "role": "fast",
+          "method": "route",
+          "model": "ollama:qwen3:0.6b",
+          "elapsed_seconds": 1.9041,
+          "tokens": 469,
+          "estimated_cost_usd": 7e-05,
+          "output": {
+            "route": "incident",
+            "needs_analysis": true
+          },
+          "prompt": null
+        },
+        {
+          "role": "fast",
+          "method": "plan",
+          "model": "ollama:qwen3:0.6b",
+          "elapsed_seconds": 1.7269,
+          "tokens": 609,
+          "estimated_cost_usd": 9.1e-05,
+          "output": {
+            "needs_analysis": false,
+            "tasks": [
+              {
+                "id": "task-0",
+                "agent": "research",
+                "kind": "monitoring",
+                "target": "payments-service",
+                "status": "pending"
+              },
+              {
+                "id": "task-analysis",
+                "agent": "analysis",
+                "kind": "pattern-analysis",
+                "status": "pending"
+              }
+            ]
+          },
+          "prompt": null
+        },
+        {
+          "role": "quality",
+          "method": "write",
+          "model": "ollama:qwen3:8b",
+          "elapsed_seconds": 35.6998,
+          "tokens": 1336,
+          "estimated_cost_usd": 0.00668,
+          "output": "1) 확인된 사실  \n- payments-service: 상태=degraded, CPU 91.0%, 메모리 55.0%, 알림=['CPU 91% (threshold 80%)', 'payments-service-3 instance responding slow']  \n\n2) 추가 확인 사항  \n- get_monitoring_status로 CPU 사용률과 최근 배포/트래픽 변화 시점 확인 필요  \n- 로그 미수집으로 특정 요청 패턴(반복 호출, 배치 작업 중복 실행 등) 확인 불가  \n- CPU 90% 이상 지속 여부(단일 시점 수치로 지속시간 추정 금지)  \n\n3) 조건부 권고  \n- CPU 90% 이상 지속 시 해당 인스턴스 오토스케일링 그룹에서 한 대 더 띄우기 권고 (지속 여부 확인 필요)  \n- 특정 배포 직후 급증 시 직전 배포 롤백 및 원인 분석 별도 진행 권고 (배포 시점 확인 필요)  \n- 정상화 후 프로파일링 결과 기반 핫스팟 코드 식별 및 최적화 작업 등록 권고 (현재 수치 기준 미확정)",
+          "prompt": "[SYSTEM]\n당신은 ICT 운영 보고 작성자다. 한국어로 간결하게 답하라. 1) 확인된 사실 2) 추가 확인 사항 3) 조건부 권고 순서로 작성하라. 모니터링 결과만 관측 사실이다. 현재 수치와 알림에 기록된 수치/임계치는 구분하라. 매뉴얼은 앞으로 수행할 점검 절차이며 실제 수행 결과가 아니다. 로그가 수집되지 않았다면 로그 분석 결과나 특정 패턴이 없다고 단정하지 말고 '로그 미수집으로 확인되지 않음'이라고 밝혀라. 단일 시점 수치로 지속시간을 추정하지 마라. 패턴 분석은 모델의 추정이며 원인 확정의 근거로 사용하지 마라. 수치는 제공된 값을 그대로 인용하고 새 수치나 임계치를 만들지 마라. 매뉴얼의 조치 조건(예: 높은 CPU가 지속되면)을 생략하지 말고, 조건이 확인되지 않으면 추가 확인 후 조치를 검토하도록 권고하라. 실제 재시작/확장/롤백을 수행했다고 표현하지 마라.\n\n[USER]\n## 사용자 요청 (관측 사실 아님)\npayments-service 결제 응답이 느려지고 CPU가 치솟았어요, 원인 확인해주세요.\n\n## 관측된 모니터링 결과\n- payments-service: 상태=degraded, CPU 91.0%, 메모리 55.0%, 알림=['CPU 91% (threshold 80%)', 'payments-service-3 instance responding slow']\n\n## 대응 매뉴얼 (미실행 절차, 조건부 권고에만 사용)\n# Runbook: CPU 급증 대응 절차\n\n1. get_monitoring_status로 CPU 사용률과 최근 배포/트래픽 변화 시점을 확인한다.\n2. 반복 호출, 배치 작업 중복 실행 같은 특정 요청 패턴이 원인인지 최근 로그에서 확인한다.\n3. CPU가 90%를 넘고 지속되면 해당 인스턴스를 오토스케일링 그룹에서 한 대 더 띄워 부하를 분산한다.\n4. 급증이 특정 배포 직후 시작됐다면 직전 배포를 롤백하고 원인 분석은 별도로 진행한다.\n5. 정상화 후 프로파일링 결과를 바탕으로 핫스팟 코드를 식별해 최적화 작업을 등록한다.\n\n## 패턴 분석 (모델 추정, 미확정)\n없음"
+        }
+      ],
+      "total_tokens": 2414,
+      "estimated_cost_usd": 0.006841,
+      "monitoring_targets": [
+        "payments-service"
+      ],
+      "route": "incident",
+      "validation_attempts": 1,
+      "validation_passed": true,
+      "final": "1) 확인된 사실  \n- payments-service: 상태=degraded, CPU 91.0%, 메모리 55.0%, 알림=['CPU 91% (threshold 80%)', 'payments-service-3 instance responding slow']  \n\n2) 추가 확인 사항  \n- get_monitoring_status로 CPU 사용률과 최근 배포/트래픽 변화 시점 확인 필요  \n- 로그 미수집으로 특정 요청 패턴(반복 호출, 배치 작업 중복 실행 등) 확인 불가  \n- CPU 90% 이상 지속 여부(단일 시점 수치로 지속시간 추정 금지)  \n\n3) 조건부 권고  \n- CPU 90% 이상 지속 시 해당 인스턴스 오토스케일링 그룹에서 한 대 더 띄우기 권고 (지속 여부 확인 필요)  \n- 특정 배포 직후 급증 시 직전 배포 롤백 및 원인 분석 별도 진행 권고 (배포 시점 확인 필요)  \n- 정상화 후 프로파일링 결과 기반 핫스팟 코드 식별 및 최적화 작업 등록 권고 (현재 수치 기준 미확정)",
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "incident"
+        },
+        {
+          "type": "PlanCreated",
+          "task_count": 2,
+          "targets": [
+            "payments-service"
+          ]
+        },
+        {
+          "type": "GateApplied",
+          "removed_analysis_tasks": 1
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-0",
+          "source": "monitoring",
+          "target": "payments-service",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 0,
+          "is_sufficient": false,
+          "gap_task": "task-gap-runbook",
+          "target": "cpu-spike"
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook",
+          "source": "runbook",
+          "target": "cpu-spike",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 1,
+          "is_sufficient": true
+        },
+        {
+          "type": "AnalysisSkipped",
+          "reason": "analysis task 0개"
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 1,
+          "length": 510
+        },
+        {
+          "type": "Validation",
+          "attempt": 1,
+          "verdict": "합격",
+          "issues": [],
+          "fallback": false
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "incident-v2"
+        }
+      ],
+      "collected": [
+        {
+          "source": "monitoring",
+          "data": {
+            "system_name": "payments-service",
+            "status": "degraded",
+            "cpu_percent": 91.0,
+            "memory_percent": 55.0,
+            "last_checked": "2026-10-20T00:00:00+00:00",
+            "alerts": [
+              "CPU 91% (threshold 80%)",
+              "payments-service-3 instance responding slow"
+            ]
+          }
+        },
+        {
+          "source": "runbook",
+          "data": "# Runbook: CPU 급증 대응 절차\n\n1. get_monitoring_status로 CPU 사용률과 최근 배포/트래픽 변화 시점을 확인한다.\n2. 반복 호출, 배치 작업 중복 실행 같은 특정 요청 패턴이 원인인지 최근 로그에서 확인한다.\n3. CPU가 90%를 넘고 지속되면 해당 인스턴스를 오토스케일링 그룹에서 한 대 더 띄워 부하를 분산한다.\n4. 급증이 특정 배포 직후 시작됐다면 직전 배포를 롤백하고 원인 분석은 별도로 진행한다.\n5. 정상화 후 프로파일링 결과를 바탕으로 핫스팟 코드를 식별해 최적화 작업을 등록한다.\n"
+        }
+      ],
+      "manual_review": "미검토"
+    },
+    {
+      "case_id": "unknown_service",
+      "query": "billing-service 응답이 느려요. 원인 확인해주세요.",
+      "requested_systems": [
+        "billing-service"
+      ],
+      "unregistered": true,
+      "manual_review_criteria": [
+        "다른 시스템을 임의로 진단하지 않고 시스템명 확인을 요청하는가"
+      ],
+      "version": "current",
+      "repeat": 1,
+      "elapsed_seconds": 0.0024,
+      "error": null,
+      "model_calls": [],
+      "total_tokens": 0,
+      "estimated_cost_usd": 0,
+      "monitoring_targets": [],
+      "route": "clarification",
+      "validation_attempts": 0,
+      "validation_passed": null,
+      "final": "`billing-service`는 등록된 모니터링 대상에서 찾을 수 없습니다. 시스템명을 확인해주세요.",
+      "events": [
+        {
+          "type": "TargetClarification",
+          "unknown_systems": [
+            "billing-service"
+          ]
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "target-clarification"
+        }
+      ],
+      "collected": [],
+      "manual_review": "미검토"
+    },
+    {
+      "case_id": "unknown_service",
+      "query": "billing-service 응답이 느려요. 원인 확인해주세요.",
+      "requested_systems": [
+        "billing-service"
+      ],
+      "unregistered": true,
+      "manual_review_criteria": [
+        "다른 시스템을 임의로 진단하지 않고 시스템명 확인을 요청하는가"
+      ],
+      "version": "baseline",
+      "repeat": 1,
+      "elapsed_seconds": 54.2993,
+      "error": null,
+      "model_calls": [
+        {
+          "role": "fast",
+          "method": "route",
+          "model": "ollama:qwen3:0.6b",
+          "elapsed_seconds": 1.1309,
+          "tokens": 235,
+          "estimated_cost_usd": 3.5e-05,
+          "output": {
+            "route": "incident",
+            "needs_analysis": false
+          },
+          "prompt": null
+        },
+        {
+          "role": "fast",
+          "method": "plan",
+          "model": "ollama:qwen3:0.6b",
+          "elapsed_seconds": 2.135,
+          "tokens": 625,
+          "estimated_cost_usd": 9.4e-05,
+          "output": {
+            "needs_analysis": true,
+            "tasks": [
+              {
+                "id": "task-0",
+                "agent": "research",
+                "kind": "monitoring",
+                "target": "auth-service",
+                "status": "pending"
+              },
+              {
+                "id": "task-analysis",
+                "agent": "analysis",
+                "kind": "pattern-analysis",
+                "status": "pending"
+              }
+            ]
+          },
+          "prompt": null
+        },
+        {
+          "role": "fast",
+          "method": "analyze",
+          "model": "ollama:qwen3:0.6b",
+          "elapsed_seconds": 1.3946,
+          "tokens": 387,
+          "estimated_cost_usd": 5.8e-05,
+          "output": "특이 패턴 없음.",
+          "prompt": null
+        },
+        {
+          "role": "quality",
+          "method": "write",
+          "model": "ollama:qwen3:8b",
+          "elapsed_seconds": 48.9142,
+          "tokens": 1423,
+          "estimated_cost_usd": 0.007115,
+          "output": "1) **커넥션 풀 사용률 초과**  \n- 커넥션 풀 사용률 92% (임계치 90% 초과)로 인해 요청 처리 지연 발생.  \n- **즉시 조치**: 풀 크기 확장 또는 느린 쿼리/외부 호출 타임아웃 설정.  \n\n2) **p95 지연 시간 초과**  \n- p95 지연 2.4s (임계치 1.0s 초과)로 응답 지연 확정.  \n- **5분 내 개선 필요**: 캐시 계층 또는 읽기 복제본으로 트래픽 분산.  \n\n3) **근본 원인 분석 및 대응**  \n- auth-service 상태가 degraded(78.0% CPU, 61.0% 메모리)로, 이에 의존하는 서비스(예: billing-service)의 지연 가능성 있음.  \n- **후속 조치**: 느린 쿼리 로그 분석 후 최적화 티켓 등록.",
+          "prompt": "[SYSTEM]\n당신은 ICT 운영 보고 작성자다. 수집된 사실만 사용해 한국어로 간결한 대응 보고를 작성하라. 반드시 '1) ... 2) ... 3) ...' 형식의 번호 절차로 답하고, 수치는 수집된 값을 그대로 인용하라.\n\n[USER]\n## 사용자 요청\nbilling-service 응답이 느려요. 원인 확인해주세요.\n\n## 수집된 사실\n- 모니터링 auth-service: 상태=degraded, CPU 78.0%, 메모리 61.0%, 알림 2건 ['p95 latency 2.4s (threshold 1.0s)', 'connection pool 92% used']\n- runbook 발췌:\n# Runbook: 응답 지연(High Latency) 대응 절차\n\n1. get_monitoring_status로 p95 지연시간과 커넥션 풀 사용률을 확인한다.\n2. 커넥션 풀 사용률이 90%를 넘으면 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 건다.\n3. 지연이 특정 리전/인스턴스에 몰려 있으면 해당 인스턴스를 로드밸런서에서 일시 제외한다.\n4. 5분 내 p95가 임계치(1.0s) 아래로 내려오지 않으면 캐시 계층 또는 읽기 복제본으로 트래픽을 분산한다.\n5. 정상화 후 느린 쿼리 로그를 분석해 근본 원인을 문서화하고 후속 최적화 티켓을 등록한다.\n- 패턴 분석: 특이 패턴 없음."
+        }
+      ],
+      "total_tokens": 2670,
+      "estimated_cost_usd": 0.007302,
+      "monitoring_targets": [
+        "auth-service"
+      ],
+      "route": "incident",
+      "validation_attempts": 1,
+      "validation_passed": null,
+      "final": "1) **커넥션 풀 사용률 초과**  \n- 커넥션 풀 사용률 92% (임계치 90% 초과)로 인해 요청 처리 지연 발생.  \n- **즉시 조치**: 풀 크기 확장 또는 느린 쿼리/외부 호출 타임아웃 설정.  \n\n2) **p95 지연 시간 초과**  \n- p95 지연 2.4s (임계치 1.0s 초과)로 응답 지연 확정.  \n- **5분 내 개선 필요**: 캐시 계층 또는 읽기 복제본으로 트래픽 분산.  \n\n3) **근본 원인 분석 및 대응**  \n- auth-service 상태가 degraded(78.0% CPU, 61.0% 메모리)로, 이에 의존하는 서비스(예: billing-service)의 지연 가능성 있음.  \n- **후속 조치**: 느린 쿼리 로그 분석 후 최적화 티켓 등록.",
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "incident"
+        },
+        {
+          "type": "PlanCreated",
+          "task_count": 2,
+          "targets": [
+            "auth-service"
+          ]
+        },
+        {
+          "type": "GateApplied",
+          "removed_analysis_tasks": 0
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-0",
+          "source": "monitoring",
+          "target": "auth-service",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 0,
+          "is_sufficient": false,
+          "gap_task": "task-gap-runbook",
+          "target": "high-latency"
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook",
+          "source": "runbook",
+          "target": "high-latency",
+          "retries": 0
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 1,
+          "is_sufficient": true
+        },
+        {
+          "type": "AnalysisCompleted",
+          "length": 9
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 1,
+          "length": 386
+        },
+        {
+          "type": "Validation",
+          "attempt": 1,
+          "verdict": "합격"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "incident-v2"
+        }
+      ],
+      "collected": [
+        {
+          "source": "monitoring",
+          "data": {
+            "system_name": "auth-service",
+            "status": "degraded",
+            "cpu_percent": 78.0,
+            "memory_percent": 61.0,
+            "last_checked": "2026-10-20T00:00:00+00:00",
+            "alerts": [
+              "p95 latency 2.4s (threshold 1.0s)",
+              "connection pool 92% used"
+            ]
+          }
+        },
+        {
+          "source": "runbook",
+          "data": "# Runbook: 응답 지연(High Latency) 대응 절차\n\n1. get_monitoring_status로 p95 지연시간과 커넥션 풀 사용률을 확인한다.\n2. 커넥션 풀 사용률이 90%를 넘으면 풀 크기를 늘리거나 느린 쿼리/외부 호출에 타임아웃을 건다.\n3. 지연이 특정 리전/인스턴스에 몰려 있으면 해당 인스턴스를 로드밸런서에서 일시 제외한다.\n4. 5분 내 p95가 임계치(1.0s) 아래로 내려오지 않으면 캐시 계층 또는 읽기 복제본으로 트래픽을 분산한다.\n5. 정상화 후 느린 쿼리 로그를 분석해 근본 원인을 문서화하고 후속 최적화 티켓을 등록한다.\n"
+        },
+        {
+          "source": "analysis",
+          "data": "특이 패턴 없음."
+        }
+      ],
+      "manual_review": "미검토"
+    },
+    {
+      "case_id": "mixed_targets",
+      "query": "payments-service와 billing-service 둘 다 응답이 느려요. 원인 확인해주세요.",
+      "requested_systems": [
+        "payments-service",
+        "billing-service"
+      ],
+      "unregistered": true,
+      "manual_review_criteria": [
+        "미등록 대상이 섞여 있으면 임의 대체하지 않고 확인을 요청하는가"
+      ],
+      "version": "baseline",
+      "repeat": 1,
+      "elapsed_seconds": 305.5925,
+      "error": "ReadTimeout: timed out",
+      "model_calls": [
+        {
+          "role": "fast",
+          "method": "route",
+          "model": "ollama:qwen3:0.6b",
+          "elapsed_seconds": 2.7975,
+          "tokens": 572,
+          "estimated_cost_usd": 8.6e-05,
+          "output": {
+            "route": "incident",
+            "needs_analysis": true
+          },
+          "prompt": null
+        },
+        {
+          "role": "fast",
+          "method": "plan",
+          "model": "ollama:qwen3:0.6b",
+          "elapsed_seconds": 2.0101,
+          "tokens": 597,
+          "estimated_cost_usd": 9e-05,
+          "output": {
+            "needs_analysis": true,
+            "tasks": [
+              {
+                "id": "task-analysis",
+                "agent": "analysis",
+                "kind": "pattern-analysis",
+                "status": "pending"
+              },
+              {
+                "id": "task-0",
+                "agent": "research",
+                "kind": "monitoring",
+                "target": "payments-service",
+                "status": "pending"
+              }
+            ]
+          },
+          "prompt": null
+        }
+      ],
+      "total_tokens": 1169,
+      "estimated_cost_usd": 0.000176,
+      "monitoring_targets": [
+        "payments-service"
+      ],
+      "route": null,
+      "validation_attempts": 0,
+      "validation_passed": null,
+      "final": null,
+      "events": [],
+      "collected": [],
+      "manual_review": "미검토"
+    },
+    {
+      "case_id": "mixed_targets",
+      "query": "payments-service와 billing-service 둘 다 응답이 느려요. 원인 확인해주세요.",
+      "requested_systems": [
+        "payments-service",
+        "billing-service"
+      ],
+      "unregistered": true,
+      "manual_review_criteria": [
+        "미등록 대상이 섞여 있으면 임의 대체하지 않고 확인을 요청하는가"
+      ],
+      "version": "current",
+      "repeat": 1,
+      "elapsed_seconds": 0.0022,
+      "error": null,
+      "model_calls": [],
+      "total_tokens": 0,
+      "estimated_cost_usd": 0,
+      "monitoring_targets": [],
+      "route": "clarification",
+      "validation_attempts": 0,
+      "validation_passed": null,
+      "final": "`billing-service`는 등록된 모니터링 대상에서 찾을 수 없습니다. 시스템명을 확인해주세요.",
+      "events": [
+        {
+          "type": "TargetClarification",
+          "unknown_systems": [
+            "billing-service"
+          ]
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "target-clarification"
+        }
+      ],
+      "collected": [],
+      "manual_review": "미검토"
+    }
+  ],
+  "warmups": [
+    {
+      "case_id": "cpu_incident",
+      "version": "baseline",
+      "repeat": 1,
+      "model": "qwen3:0.6b",
+      "load_duration_ns": 788818625
+    },
+    {
+      "case_id": "cpu_incident",
+      "version": "baseline",
+      "repeat": 1,
+      "model": "qwen3:8b",
+      "load_duration_ns": 3687129500
+    },
+    {
+      "case_id": "cpu_incident",
+      "version": "current",
+      "repeat": 1,
+      "model": "qwen3:0.6b",
+      "load_duration_ns": 6121959
+    },
+    {
+      "case_id": "cpu_incident",
+      "version": "current",
+      "repeat": 1,
+      "model": "qwen3:8b",
+      "load_duration_ns": 418417
+    },
+    {
+      "case_id": "unknown_service",
+      "version": "current",
+      "repeat": 1,
+      "model": "qwen3:0.6b",
+      "load_duration_ns": 8488542
+    },
+    {
+      "case_id": "unknown_service",
+      "version": "current",
+      "repeat": 1,
+      "model": "qwen3:8b",
+      "load_duration_ns": 451375
+    },
+    {
+      "case_id": "unknown_service",
+      "version": "baseline",
+      "repeat": 1,
+      "model": "qwen3:0.6b",
+      "load_duration_ns": 5558583
+    },
+    {
+      "case_id": "unknown_service",
+      "version": "baseline",
+      "repeat": 1,
+      "model": "qwen3:8b",
+      "load_duration_ns": 1688084
+    },
+    {
+      "case_id": "mixed_targets",
+      "version": "baseline",
+      "repeat": 1,
+      "model": "qwen3:0.6b",
+      "load_duration_ns": 8518917
+    },
+    {
+      "case_id": "mixed_targets",
+      "version": "baseline",
+      "repeat": 1,
+      "model": "qwen3:8b",
+      "load_duration_ns": 402833
+    },
+    {
+      "case_id": "mixed_targets",
+      "version": "current",
+      "repeat": 1,
+      "model": "qwen3:0.6b",
+      "load_duration_ns": 7664250
+    },
+    {
+      "case_id": "mixed_targets",
+      "version": "current",
+      "repeat": 1,
+      "model": "qwen3:8b",
+      "load_duration_ns": 9073458
+    }
+  ],
+  "complete": true,
+  "source_sha256": {
+    "baseline": {
+      "agent/graph.py": "a28da5c2a9e24b84b4e23b721a9a2421e16125430c8b80afbdf404bc92b3e3dd",
+      "agent/deps.py": "05e2a41c5a4af655e2544292c015047bd9447d7d47bd2f067515f50042ad4d69",
+      "agent/retry.py": "d2524552348c9faa08b5ce446434bf593677c7028fb38c9e11b03de8839d2a3a",
+      "data/monitoring.json": "44cf849b6ea4c64bb2ff6911fd99add291cc7a7bb94f56dc1ce562e527be8224",
+      "agent/ollama_llm.py": "5358994cde09c7f337bc11c1713995ab701f91175437238103b86dd1b5de46bb",
+      "data/runbooks/cpu-spike.md": "30796f7b5c1d0bc09acfb2518b240e3a07b04136e84fe41397802a3bf2bff22d",
+      "data/runbooks/db-down.md": "a2d4f4d3bc89984348976e9012518ceba32f389a35bf5ee7da4c19f7e1de9be5",
+      "data/runbooks/disk-full.md": "72b9d4f006490887ccba981531129e5a42c0d7b8c789208db391fdc5acc566c7",
+      "data/runbooks/high-latency.md": "0df4846e66993b0b9312327a3f51fe6de663d701c64c2c7c10a9e2c35e9e63a3",
+      "data/runbooks/memory-leak.md": "085f00e9bba5effbb54e97a82d5f0b7032e027dac29816021729932a5e9a9ee1",
+      "data/runbooks/network-timeout.md": "ed68d1bc775138e7e66cfb50698949856bf27d5e11afefff6e5826223e063596"
+    },
+    "current": {
+      "agent/graph.py": "3fa6cfeb33d87428de53d2ffc6ddb813ca40e4014be73d39b2a9d07af8795934",
+      "agent/grounding.py": "241315e2c57090bb8fb101f36a2fb27e850fca61c568b24c0a3e043015db7bfc",
+      "agent/deps.py": "05e2a41c5a4af655e2544292c015047bd9447d7d47bd2f067515f50042ad4d69",
+      "agent/retry.py": "d2524552348c9faa08b5ce446434bf593677c7028fb38c9e11b03de8839d2a3a",
+      "data/monitoring.json": "44cf849b6ea4c64bb2ff6911fd99add291cc7a7bb94f56dc1ce562e527be8224",
+      "agent/ollama_llm.py": "359da05093348be5b307875699bfbb1266ffb65d785d4b15c143bda493b641dc",
+      "data/runbooks/cpu-spike.md": "30796f7b5c1d0bc09acfb2518b240e3a07b04136e84fe41397802a3bf2bff22d",
+      "data/runbooks/db-down.md": "a2d4f4d3bc89984348976e9012518ceba32f389a35bf5ee7da4c19f7e1de9be5",
+      "data/runbooks/disk-full.md": "72b9d4f006490887ccba981531129e5a42c0d7b8c789208db391fdc5acc566c7",
+      "data/runbooks/high-latency.md": "0df4846e66993b0b9312327a3f51fe6de663d701c64c2c7c10a9e2c35e9e63a3",
+      "data/runbooks/memory-leak.md": "085f00e9bba5effbb54e97a82d5f0b7032e027dac29816021729932a5e9a9ee1",
+      "data/runbooks/network-timeout.md": "ed68d1bc775138e7e66cfb50698949856bf27d5e11afefff6e5826223e063596"
+    }
+  }
+}

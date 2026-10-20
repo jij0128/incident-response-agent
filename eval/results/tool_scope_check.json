@@ -1,0 +1,190 @@
+{
+  "experiment": "tool_scope_followup_real_ollama_fixed_mcp",
+  "generated_at": "2026-10-20T14:26:21+09:00",
+  "scope": "수정 후 고정 입력으로 실제 Ollama와 전체 그래프 1회 확인. 웹/SSE UI 검증과 별개이며 이전 실측과 속도를 비교하지 않음.",
+  "command": [
+    "eval/compare_ollama.py",
+    "--worker-source",
+    "/Users/ijeong/skala/15-week/all_total_vue_student",
+    "--case-id",
+    "cpu_incident",
+    "--label",
+    "tool_scope_followup"
+  ],
+  "warmup": false,
+  "models": [
+    "qwen3:0.6b",
+    "qwen3:8b"
+  ],
+  "tracing_enabled": false,
+  "source_sha256": {
+    "agent/grounding.py": "2e6dbaa3b80f2623aa6a883d10120816504d0b30102977517d39f5df63a32661",
+    "agent/graph.py": "3fa6cfeb33d87428de53d2ffc6ddb813ca40e4014be73d39b2a9d07af8795934",
+    "agent/ollama_llm.py": "359da05093348be5b307875699bfbb1266ffb65d785d4b15c143bda493b641dc",
+    "data/runbooks/cpu-spike.md": "30796f7b5c1d0bc09acfb2518b240e3a07b04136e84fe41397802a3bf2bff22d",
+    "eval/compare_ollama.py": "82527f021e985676fbcc7dda04e27b55c1e1b78feb8c3d2e87cc149460360363",
+    "eval/ollama_cases.json": "4a7bd0e0618594cc868554a5127f9c320caa2237089eb8315283ea14df9c2665"
+  },
+  "result": {
+    "case_id": "cpu_incident",
+    "query": "payments-service 결제 응답이 느려지고 CPU가 치솟았어요, 원인 확인해주세요.",
+    "requested_systems": [
+      "payments-service"
+    ],
+    "unregistered": false,
+    "manual_review_criteria": [
+      "현재 CPU와 알림 수치를 구분하는가",
+      "수집하지 않은 로그를 확인한 사실처럼 말하지 않는가",
+      "CPU 지속 여부 미확인을 유지하고 확장을 조건부로 제안하는가"
+    ],
+    "version": "tool_scope_followup",
+    "repeat": 1,
+    "elapsed_seconds": 43.7024,
+    "error": null,
+    "model_calls": [
+      {
+        "role": "fast",
+        "method": "route",
+        "model": "ollama:qwen3:0.6b",
+        "elapsed_seconds": 2.7092,
+        "tokens": 469,
+        "estimated_cost_usd": 7e-05,
+        "output": {
+          "route": "incident",
+          "needs_analysis": true
+        },
+        "prompt": null
+      },
+      {
+        "role": "fast",
+        "method": "plan",
+        "model": "ollama:qwen3:0.6b",
+        "elapsed_seconds": 1.6443,
+        "tokens": 609,
+        "estimated_cost_usd": 9.1e-05,
+        "output": {
+          "needs_analysis": false,
+          "tasks": [
+            {
+              "id": "task-0",
+              "agent": "research",
+              "kind": "monitoring",
+              "target": "payments-service",
+              "status": "pending"
+            },
+            {
+              "id": "task-analysis",
+              "agent": "analysis",
+              "kind": "pattern-analysis",
+              "status": "pending"
+            }
+          ]
+        },
+        "prompt": null
+      },
+      {
+        "role": "quality",
+        "method": "write",
+        "model": "ollama:qwen3:8b",
+        "elapsed_seconds": 38.6257,
+        "tokens": 1654,
+        "estimated_cost_usd": 0.00827,
+        "output": "1) 확인된 사실  \n- payments-service 상태: degraded  \n- 현재 CPU 사용률: 91.0% (임계치 80% 초과)  \n- 메모리 사용률: 55.0%  \n- 알림 내용: 'CPU 91% (threshold 80%)', 'payments-service-3 instance responding slow'  \n\n2) 추가 확인 사항  \n- 배포 이력, 트래픽 변화 이력, 시계열 지표, 로그 원문, 프로파일링 결과는 조회 범위 외로 미수집 상태  \n- CPU 사용률 지속 시간 또는 변화 추이 판단 불가 (단일 시점 수치 기준)  \n- 요청 패턴 확인을 위한 로그 원문 미수집으로 인해 특정 패턴 분석 불가  \n\n3) 조건부 권고  \n- **CPU 90% 이상 지속 시**: 해당 인스턴스를 오토스케일링 그룹에서 한 대 더 띄우는 조치를 검토하되, 지속 시간 확인 후 수행 필요  \n- **배포 시점 확인 필요 시**: 별도 배포 기록 요청 (배포 이력 조회 불가)  \n- **로그 분석 필요 시**: 로그 미수집으로 인해 원인 확인 불가, 별도 로그 자료 요청 필요",
+        "prompt": "[SYSTEM]\n당신은 ICT 운영 보고 작성자다. 한국어로 간결하게 답하라. 1) 확인된 사실 2) 추가 확인 사항 3) 조건부 권고 순서로 작성하라. 모니터링 결과만 관측 사실이다. 현재 수치와 알림에 기록된 수치/임계치는 구분하라. 매뉴얼은 앞으로 수행할 점검 절차이며 실제 수행 결과가 아니다. 도구의 조회 범위는 제공된 기능 설명을 따르라. 매뉴얼이 도구의 조회 범위를 넘는 확인을 지시해도 그 도구로 조회할 수 있다고 안내하지 마라. 제공되지 않는 이력이나 로그는 미수집으로 표시하고 필요한 별도 자료를 요청하라. 로그가 수집되지 않았다면 로그 분석 결과나 특정 패턴이 없다고 단정하지 말고 '로그 미수집으로 확인되지 않음'이라고 밝혀라. 단일 시점 수치로 지속시간을 추정하지 마라. 패턴 분석은 모델의 추정이며 원인 확정의 근거로 사용하지 마라. 수치는 제공된 값을 그대로 인용하고 새 수치나 임계치를 만들지 마라. 매뉴얼의 조치 조건(예: 높은 CPU가 지속되면)을 생략하지 말고, 조건이 확인되지 않으면 추가 확인 후 조치를 검토하도록 권고하라. 실제 재시작/확장/롤백을 수행했다고 표현하지 마라.\n\n[USER]\n## 사용자 요청 (관측 사실 아님)\npayments-service 결제 응답이 느려지고 CPU가 치솟았어요, 원인 확인해주세요.\n\n## 도구의 조회 범위 (매뉴얼보다 우선)\n- get_monitoring_status는 시스템명, 현재 상태, CPU/메모리 사용률, 조회 시각, 알림 문구를 반환한다.\n- 배포 이력, 트래픽 변화 이력, 시계열 지표, 로그 원문, 프로파일링 결과는 조회할 수 없다.\n- 알림에 적힌 지연시간/커넥션 풀 수치 등은 알림 내용으로만 인용한다. 조회 시각이나 단일 수치로 장애 지속시간 또는 변화 추이를 판단하지 않는다.\n- 배포 시점은 별도 배포 기록, 트래픽 변화/CPU 지속 여부는 시계열 지표, 요청 패턴은 로그 원문을 확보해야 확인할 수 있다. 이 자료가 필요하면 미수집임을 밝히고 별도 자료를 요청한다.\n\n## 관측된 모니터링 결과\n- payments-service: 상태=degraded, CPU 91.0%, 메모리 55.0%, 알림=['CPU 91% (threshold 80%)', 'payments-service-3 instance responding slow']\n\n## 대응 매뉴얼 (미실행 절차, 조건부 권고에만 사용)\n# Runbook: CPU 급증 대응 절차\n\n1. get_monitoring_status로 CPU 사용률과 최근 배포/트래픽 변화 시점을 확인한다.\n2. 반복 호출, 배치 작업 중복 실행 같은 특정 요청 패턴이 원인인지 최근 로그에서 확인한다.\n3. CPU가 90%를 넘고 지속되면 해당 인스턴스를 오토스케일링 그룹에서 한 대 더 띄워 부하를 분산한다.\n4. 급증이 특정 배포 직후 시작됐다면 직전 배포를 롤백하고 원인 분석은 별도로 진행한다.\n5. 정상화 후 프로파일링 결과를 바탕으로 핫스팟 코드를 식별해 최적화 작업을 등록한다.\n\n## 패턴 분석 (모델 추정, 미확정)\n없음"
+      }
+    ],
+    "total_tokens": 2732,
+    "estimated_cost_usd": 0.008431,
+    "monitoring_targets": [
+      "payments-service"
+    ],
+    "route": "incident",
+    "validation_attempts": 1,
+    "validation_passed": true,
+    "final": "1) 확인된 사실  \n- payments-service 상태: degraded  \n- 현재 CPU 사용률: 91.0% (임계치 80% 초과)  \n- 메모리 사용률: 55.0%  \n- 알림 내용: 'CPU 91% (threshold 80%)', 'payments-service-3 instance responding slow'  \n\n2) 추가 확인 사항  \n- 배포 이력, 트래픽 변화 이력, 시계열 지표, 로그 원문, 프로파일링 결과는 조회 범위 외로 미수집 상태  \n- CPU 사용률 지속 시간 또는 변화 추이 판단 불가 (단일 시점 수치 기준)  \n- 요청 패턴 확인을 위한 로그 원문 미수집으로 인해 특정 패턴 분석 불가  \n\n3) 조건부 권고  \n- **CPU 90% 이상 지속 시**: 해당 인스턴스를 오토스케일링 그룹에서 한 대 더 띄우는 조치를 검토하되, 지속 시간 확인 후 수행 필요  \n- **배포 시점 확인 필요 시**: 별도 배포 기록 요청 (배포 이력 조회 불가)  \n- **로그 분석 필요 시**: 로그 미수집으로 인해 원인 확인 불가, 별도 로그 자료 요청 필요",
+    "events": [
+      {
+        "type": "RouteDecided",
+        "route": "incident"
+      },
+      {
+        "type": "PlanCreated",
+        "task_count": 2,
+        "targets": [
+          "payments-service"
+        ]
+      },
+      {
+        "type": "GateApplied",
+        "removed_analysis_tasks": 1
+      },
+      {
+        "type": "TaskCompleted",
+        "id": "task-0",
+        "source": "monitoring",
+        "target": "payments-service",
+        "retries": 0
+      },
+      {
+        "type": "ReplanCheck",
+        "round": 0,
+        "is_sufficient": false,
+        "gap_task": "task-gap-runbook",
+        "target": "cpu-spike"
+      },
+      {
+        "type": "TaskCompleted",
+        "id": "task-gap-runbook",
+        "source": "runbook",
+        "target": "cpu-spike",
+        "retries": 0
+      },
+      {
+        "type": "ReplanCheck",
+        "round": 1,
+        "is_sufficient": true
+      },
+      {
+        "type": "AnalysisSkipped",
+        "reason": "analysis task 0개"
+      },
+      {
+        "type": "DraftWritten",
+        "attempt": 1,
+        "length": 552
+      },
+      {
+        "type": "Validation",
+        "attempt": 1,
+        "verdict": "합격",
+        "issues": [],
+        "fallback": false
+      },
+      {
+        "type": "Finalize",
+        "pipeline": "incident-v2"
+      }
+    ],
+    "collected": [
+      {
+        "source": "monitoring",
+        "data": {
+          "system_name": "payments-service",
+          "status": "degraded",
+          "cpu_percent": 91.0,
+          "memory_percent": 55.0,
+          "last_checked": "2026-10-20T00:00:00+00:00",
+          "alerts": [
+            "CPU 91% (threshold 80%)",
+            "payments-service-3 instance responding slow"
+          ]
+        }
+      },
+      {
+        "source": "runbook",
+        "data": "# Runbook: CPU 급증 대응 절차\n\n1. get_monitoring_status로 CPU 사용률과 최근 배포/트래픽 변화 시점을 확인한다.\n2. 반복 호출, 배치 작업 중복 실행 같은 특정 요청 패턴이 원인인지 최근 로그에서 확인한다.\n3. CPU가 90%를 넘고 지속되면 해당 인스턴스를 오토스케일링 그룹에서 한 대 더 띄워 부하를 분산한다.\n4. 급증이 특정 배포 직후 시작됐다면 직전 배포를 롤백하고 원인 분석은 별도로 진행한다.\n5. 정상화 후 프로파일링 결과를 바탕으로 핫스팟 코드를 식별해 최적화 작업을 등록한다.\n"
+      }
+    ],
+    "manual_review": "미검토"
+  }
+}

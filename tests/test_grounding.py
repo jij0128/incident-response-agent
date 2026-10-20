@@ -65,6 +65,10 @@ class GroundingTests(unittest.IsolatedAsyncioTestCase):
                 system, user = transport.call_args.args
                 self.assertIn("로그가 수집되지 않았다면", system)
                 self.assertIn("지속시간을 추정하지 마라", system)
+                self.assertIn("조회 범위를 넘는 확인", system)
+                self.assertIn("도구의 조회 범위 (매뉴얼보다 우선)", user)
+                self.assertIn("배포 이력, 트래픽 변화 이력", user)
+                self.assertIn("별도 배포 기록", user)
                 self.assertIn("관측된 모니터링 결과", user)
                 self.assertIn("미실행 절차", user)
                 self.assertIn("모델 추정, 미확정", user)

@@ -1,0 +1,15 @@
+{
+  "cases": [
+    {"id": "cpu_incident", "query": "payments-service 결제 응답이 느려지고 CPU가 치솟았어요, 원인 확인해주세요.", "requested_systems": ["payments-service"], "unregistered": false, "manual_review": ["현재 CPU와 알림 수치를 구분하는가", "수집하지 않은 로그를 확인한 사실처럼 말하지 않는가", "CPU 지속 여부 미확인을 유지하고 확장을 조건부로 제안하는가"]},
+    {"id": "unknown_service", "query": "billing-service 응답이 느려요. 원인 확인해주세요.", "requested_systems": ["billing-service"], "unregistered": true, "manual_review": ["다른 시스템을 임의로 진단하지 않고 시스템명 확인을 요청하는가"]},
+    {"id": "mixed_targets", "query": "payments-service와 billing-service 둘 다 응답이 느려요. 원인 확인해주세요.", "requested_systems": ["payments-service", "billing-service"], "unregistered": true, "manual_review": ["미등록 대상이 섞여 있으면 임의 대체하지 않고 확인을 요청하는가"]}
+  ],
+  "monitoring": {
+    "auth-service": {"system_name": "auth-service", "status": "degraded", "cpu_percent": 78.0, "memory_percent": 61.0, "last_checked": "2026-10-20T00:00:00+00:00", "alerts": ["p95 latency 2.4s (threshold 1.0s)", "connection pool 92% used"]},
+    "web-01": {"system_name": "web-01", "status": "healthy", "cpu_percent": 34.0, "memory_percent": 48.0, "last_checked": "2026-10-20T00:00:00+00:00", "alerts": []},
+    "payments-service": {"system_name": "payments-service", "status": "degraded", "cpu_percent": 91.0, "memory_percent": 55.0, "last_checked": "2026-10-20T00:00:00+00:00", "alerts": ["CPU 91% (threshold 80%)", "payments-service-3 instance responding slow"]},
+    "cache-service": {"system_name": "cache-service", "status": "degraded", "cpu_percent": 42.0, "memory_percent": 89.0, "last_checked": "2026-10-20T00:00:00+00:00", "alerts": ["memory usage climbing steadily over 6h", "heap near limit"]},
+    "gateway-service": {"system_name": "gateway-service", "status": "degraded", "cpu_percent": 30.0, "memory_percent": 45.0, "last_checked": "2026-10-20T00:00:00+00:00", "alerts": ["upstream timeout to payments-service (504)", "network packet loss 3%"]},
+    "log-service": {"system_name": "log-service", "status": "degraded", "cpu_percent": 20.0, "memory_percent": 35.0, "last_checked": "2026-10-20T00:00:00+00:00", "alerts": ["disk usage 95% on /var/log", "disk space low"]}
+  }
+}

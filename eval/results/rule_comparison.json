@@ -1,0 +1,321 @@
+{
+  "experiment": "fixed_rule_cases_no_model_calls",
+  "generated_at": "2026-10-20T13:46:48+09:00",
+  "baseline_commit": "0672d141ebd1406fb73ab9b0f43423e6a081d902",
+  "current_head": "279667a4b3417c0989d2bd1506af85a2e5ca7c23",
+  "cases_sha256": "6454fdbe833ab06b3e60da507bb4d73015bbe13f223023c5756bd88b97769a10",
+  "python_version": "3.11.15",
+  "baseline": {
+    "targets": [
+      {
+        "id": "unknown_service",
+        "query": "billing-service 응답이 느려요. 원인 확인해주세요.",
+        "action": "clarify",
+        "actual_action": "continue",
+        "actual_prompt_system": "auth-service",
+        "reply": null,
+        "passed": false
+      },
+      {
+        "id": "mixed_targets",
+        "query": "payments-service와 billing-service 둘 다 진단해줘",
+        "action": "clarify",
+        "actual_action": "continue",
+        "actual_prompt_system": "payments-service",
+        "reply": null,
+        "passed": false
+      },
+      {
+        "id": "prefix_collision",
+        "query": "old-auth-service 응답이 느려요",
+        "action": "clarify",
+        "actual_action": "continue",
+        "actual_prompt_system": "auth-service",
+        "reply": null,
+        "passed": false
+      },
+      {
+        "id": "unknown_host",
+        "query": "web-02 CPU 급증 원인 진단해줘",
+        "action": "clarify",
+        "actual_action": "continue",
+        "actual_prompt_system": "auth-service",
+        "reply": null,
+        "passed": false
+      },
+      {
+        "id": "known_service",
+        "query": "payments-service CPU 급증 원인 진단해줘",
+        "action": "continue",
+        "prompt_system": "payments-service",
+        "actual_action": "continue",
+        "actual_prompt_system": "payments-service",
+        "reply": null,
+        "passed": true
+      },
+      {
+        "id": "known_multiple",
+        "query": "gateway-service에서 payments-service로 가는 요청이 타임아웃 나고 있어요",
+        "action": "continue",
+        "prompt_system": "gateway-service",
+        "actual_action": "continue",
+        "actual_prompt_system": "gateway-service",
+        "reply": null,
+        "passed": true
+      },
+      {
+        "id": "no_explicit_target",
+        "query": "로그인 응답이 느려요. 원인 확인해주세요.",
+        "action": "continue",
+        "prompt_system": "auth-service",
+        "actual_action": "continue",
+        "actual_prompt_system": "auth-service",
+        "reply": null,
+        "passed": true
+      }
+    ],
+    "drafts": [
+      {
+        "id": "correct_observation",
+        "group": "supported",
+        "expected_accepted": true,
+        "draft": "1) 현재 CPU 95.9%, 메모리 57.4%입니다. 2) 로그를 추가 확인하세요. 3) 지속시간 확인 후 조치를 검토하세요.",
+        "actual_accepted": true,
+        "passed": true,
+        "feedback": null
+      },
+      {
+        "id": "correct_alert",
+        "group": "supported",
+        "expected_accepted": true,
+        "draft": "1) 알림에는 CPU 91%, 임계치 80%로 기록되어 있습니다. 2) 현재 관측과 알림을 구분하세요. 3) 로그를 추가 확인하세요.",
+        "actual_accepted": true,
+        "passed": true,
+        "feedback": null
+      },
+      {
+        "id": "conditional_threshold",
+        "group": "supported",
+        "expected_accepted": true,
+        "draft": "1) 현재 CPU는 95.90%입니다. 2) 지속시간은 미확인입니다. 3) 매뉴얼에 따라 CPU 90% 이상이 지속되면 확장을 검토하세요.",
+        "actual_accepted": true,
+        "passed": true,
+        "feedback": null
+      },
+      {
+        "id": "invented_cpu",
+        "group": "unsupported",
+        "expected_accepted": false,
+        "draft": "1) CPU는 100%로 관측되어 장애 상태입니다. 2) 로그를 추가 확인하세요. 3) 지속시간 확인 후 조치를 검토하세요.",
+        "actual_accepted": true,
+        "passed": false,
+        "feedback": null
+      },
+      {
+        "id": "invented_memory",
+        "group": "unsupported",
+        "expected_accepted": false,
+        "draft": "1) 메모리는 88.8%로 관측되어 장애 상태입니다. 2) 로그를 추가 확인하세요. 3) 지속시간 확인 후 조치를 검토하세요.",
+        "actual_accepted": true,
+        "passed": false,
+        "feedback": null
+      },
+      {
+        "id": "analysis_not_evidence",
+        "group": "unsupported",
+        "expected_accepted": false,
+        "draft": "1) CPU가 99.9%로 관측되었습니다. 2) 모델 추정이 아니라 확정된 수치입니다. 3) 지속시간을 확인하세요.",
+        "actual_accepted": true,
+        "passed": false,
+        "feedback": null
+      },
+      {
+        "id": "metric_misattribution",
+        "group": "known_limitation",
+        "expected_accepted": false,
+        "draft": "1) 현재 CPU 사용률은 57.4%로 관측되었습니다. 2) 로그를 추가 확인하세요. 3) 지속시간 확인 후 조치를 검토하세요.",
+        "actual_accepted": true,
+        "passed": false,
+        "feedback": null
+      },
+      {
+        "id": "unsupported_seconds",
+        "group": "known_limitation",
+        "expected_accepted": false,
+        "draft": "1) 현재 응답 지연은 12.3초로 관측되었습니다. 2) 로그를 추가 확인하세요. 3) 지속시간 확인 후 조치를 검토하세요.",
+        "actual_accepted": true,
+        "passed": false,
+        "feedback": null
+      }
+    ],
+    "repeated_failure": {
+      "attempts": 3,
+      "verdict": "합격(최대 시도 도달 — 통과 처리)",
+      "final": "CPU 100%입니다.",
+      "returned_invalid_draft": true
+    },
+    "source_sha256": {
+      "agent/graph.py": "a28da5c2a9e24b84b4e23b721a9a2421e16125430c8b80afbdf404bc92b3e3dd",
+      "agent/deps.py": "05e2a41c5a4af655e2544292c015047bd9447d7d47bd2f067515f50042ad4d69",
+      "agent/retry.py": "d2524552348c9faa08b5ce446434bf593677c7028fb38c9e11b03de8839d2a3a",
+      "data/monitoring.json": "44cf849b6ea4c64bb2ff6911fd99add291cc7a7bb94f56dc1ce562e527be8224"
+    }
+  },
+  "current": {
+    "targets": [
+      {
+        "id": "unknown_service",
+        "query": "billing-service 응답이 느려요. 원인 확인해주세요.",
+        "action": "clarify",
+        "actual_action": "clarify",
+        "actual_prompt_system": null,
+        "reply": "`billing-service`는 등록된 모니터링 대상에서 찾을 수 없습니다. 시스템명을 확인해주세요.",
+        "passed": true
+      },
+      {
+        "id": "mixed_targets",
+        "query": "payments-service와 billing-service 둘 다 진단해줘",
+        "action": "clarify",
+        "actual_action": "clarify",
+        "actual_prompt_system": null,
+        "reply": "`billing-service`는 등록된 모니터링 대상에서 찾을 수 없습니다. 시스템명을 확인해주세요.",
+        "passed": true
+      },
+      {
+        "id": "prefix_collision",
+        "query": "old-auth-service 응답이 느려요",
+        "action": "clarify",
+        "actual_action": "clarify",
+        "actual_prompt_system": null,
+        "reply": "`old-auth-service`는 등록된 모니터링 대상에서 찾을 수 없습니다. 시스템명을 확인해주세요.",
+        "passed": true
+      },
+      {
+        "id": "unknown_host",
+        "query": "web-02 CPU 급증 원인 진단해줘",
+        "action": "clarify",
+        "actual_action": "clarify",
+        "actual_prompt_system": null,
+        "reply": "`web-02`는 등록된 모니터링 대상에서 찾을 수 없습니다. 시스템명을 확인해주세요.",
+        "passed": true
+      },
+      {
+        "id": "known_service",
+        "query": "payments-service CPU 급증 원인 진단해줘",
+        "action": "continue",
+        "prompt_system": "payments-service",
+        "actual_action": "continue",
+        "actual_prompt_system": "payments-service",
+        "reply": null,
+        "passed": true
+      },
+      {
+        "id": "known_multiple",
+        "query": "gateway-service에서 payments-service로 가는 요청이 타임아웃 나고 있어요",
+        "action": "continue",
+        "prompt_system": "gateway-service",
+        "actual_action": "continue",
+        "actual_prompt_system": "gateway-service",
+        "reply": null,
+        "passed": true
+      },
+      {
+        "id": "no_explicit_target",
+        "query": "로그인 응답이 느려요. 원인 확인해주세요.",
+        "action": "continue",
+        "prompt_system": "auth-service",
+        "actual_action": "continue",
+        "actual_prompt_system": "auth-service",
+        "reply": null,
+        "passed": true
+      }
+    ],
+    "drafts": [
+      {
+        "id": "correct_observation",
+        "group": "supported",
+        "expected_accepted": true,
+        "draft": "1) 현재 CPU 95.9%, 메모리 57.4%입니다. 2) 로그를 추가 확인하세요. 3) 지속시간 확인 후 조치를 검토하세요.",
+        "actual_accepted": true,
+        "passed": true,
+        "feedback": null
+      },
+      {
+        "id": "correct_alert",
+        "group": "supported",
+        "expected_accepted": true,
+        "draft": "1) 알림에는 CPU 91%, 임계치 80%로 기록되어 있습니다. 2) 현재 관측과 알림을 구분하세요. 3) 로그를 추가 확인하세요.",
+        "actual_accepted": true,
+        "passed": true,
+        "feedback": null
+      },
+      {
+        "id": "conditional_threshold",
+        "group": "supported",
+        "expected_accepted": true,
+        "draft": "1) 현재 CPU는 95.90%입니다. 2) 지속시간은 미확인입니다. 3) 매뉴얼에 따라 CPU 90% 이상이 지속되면 확장을 검토하세요.",
+        "actual_accepted": true,
+        "passed": true,
+        "feedback": null
+      },
+      {
+        "id": "invented_cpu",
+        "group": "unsupported",
+        "expected_accepted": false,
+        "draft": "1) CPU는 100%로 관측되어 장애 상태입니다. 2) 로그를 추가 확인하세요. 3) 지속시간 확인 후 조치를 검토하세요.",
+        "actual_accepted": false,
+        "passed": true,
+        "feedback": "수집 근거에 없는 수치 100%를 삭제하거나 관측된 값으로 수정하세요."
+      },
+      {
+        "id": "invented_memory",
+        "group": "unsupported",
+        "expected_accepted": false,
+        "draft": "1) 메모리는 88.8%로 관측되어 장애 상태입니다. 2) 로그를 추가 확인하세요. 3) 지속시간 확인 후 조치를 검토하세요.",
+        "actual_accepted": false,
+        "passed": true,
+        "feedback": "수집 근거에 없는 수치 88.8%를 삭제하거나 관측된 값으로 수정하세요."
+      },
+      {
+        "id": "analysis_not_evidence",
+        "group": "unsupported",
+        "expected_accepted": false,
+        "draft": "1) CPU가 99.9%로 관측되었습니다. 2) 모델 추정이 아니라 확정된 수치입니다. 3) 지속시간을 확인하세요.",
+        "actual_accepted": false,
+        "passed": true,
+        "feedback": "수집 근거에 없는 수치 99.9%를 삭제하거나 관측된 값으로 수정하세요."
+      },
+      {
+        "id": "metric_misattribution",
+        "group": "known_limitation",
+        "expected_accepted": false,
+        "draft": "1) 현재 CPU 사용률은 57.4%로 관측되었습니다. 2) 로그를 추가 확인하세요. 3) 지속시간 확인 후 조치를 검토하세요.",
+        "actual_accepted": true,
+        "passed": false,
+        "feedback": null
+      },
+      {
+        "id": "unsupported_seconds",
+        "group": "known_limitation",
+        "expected_accepted": false,
+        "draft": "1) 현재 응답 지연은 12.3초로 관측되었습니다. 2) 로그를 추가 확인하세요. 3) 지속시간 확인 후 조치를 검토하세요.",
+        "actual_accepted": true,
+        "passed": false,
+        "feedback": null
+      }
+    ],
+    "repeated_failure": {
+      "attempts": 3,
+      "verdict": "실패(관측 상태만 안내)",
+      "final": "답변 검증을 완료하지 못해 진단을 확정할 수 없습니다. 수집된 상태만 안내합니다.\n- payments-service: 상태=degraded, CPU 95.9%\n원인과 조치는 로그 및 추가 관측을 확인한 뒤 판단해주세요.",
+      "returned_invalid_draft": false
+    },
+    "source_sha256": {
+      "agent/graph.py": "3fa6cfeb33d87428de53d2ffc6ddb813ca40e4014be73d39b2a9d07af8795934",
+      "agent/grounding.py": "241315e2c57090bb8fb101f36a2fb27e850fca61c568b24c0a3e043015db7bfc",
+      "agent/deps.py": "05e2a41c5a4af655e2544292c015047bd9447d7d47bd2f067515f50042ad4d69",
+      "agent/retry.py": "d2524552348c9faa08b5ce446434bf593677c7028fb38c9e11b03de8839d2a3a",
+      "data/monitoring.json": "44cf849b6ea4c64bb2ff6911fd99add291cc7a7bb94f56dc1ce562e527be8224"
+    }
+  }
+}

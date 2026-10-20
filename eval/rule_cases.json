@@ -1,0 +1,28 @@
+{
+  "description": "고정 입력으로 대상 확인과 검증 노드만 비교한다. 모델 생성 품질 평가는 아니다.",
+  "target_cases": [
+    {"id": "unknown_service", "query": "billing-service 응답이 느려요. 원인 확인해주세요.", "action": "clarify"},
+    {"id": "mixed_targets", "query": "payments-service와 billing-service 둘 다 진단해줘", "action": "clarify"},
+    {"id": "prefix_collision", "query": "old-auth-service 응답이 느려요", "action": "clarify"},
+    {"id": "unknown_host", "query": "web-02 CPU 급증 원인 진단해줘", "action": "clarify"},
+    {"id": "known_service", "query": "payments-service CPU 급증 원인 진단해줘", "action": "continue", "prompt_system": "payments-service"},
+    {"id": "known_multiple", "query": "gateway-service에서 payments-service로 가는 요청이 타임아웃 나고 있어요", "action": "continue", "prompt_system": "gateway-service"},
+    {"id": "no_explicit_target", "query": "로그인 응답이 느려요. 원인 확인해주세요.", "action": "continue", "prompt_system": "auth-service"}
+  ],
+  "evidence": [
+    {"source": "monitoring", "data": {"system_name": "payments-service", "status": "degraded", "cpu_percent": 95.9, "memory_percent": 57.4, "alerts": ["CPU 91% (threshold 80%)"]}},
+    {"source": "runbook", "data": "CPU가 90% 이상으로 지속되면 확장을 검토한다."},
+    {"source": "analysis", "data": "CPU가 99.9%일 것으로 추정됨"}
+  ],
+  "draft_cases": [
+    {"id": "correct_observation", "group": "supported", "expected_accepted": true, "draft": "1) 현재 CPU 95.9%, 메모리 57.4%입니다. 2) 로그를 추가 확인하세요. 3) 지속시간 확인 후 조치를 검토하세요."},
+    {"id": "correct_alert", "group": "supported", "expected_accepted": true, "draft": "1) 알림에는 CPU 91%, 임계치 80%로 기록되어 있습니다. 2) 현재 관측과 알림을 구분하세요. 3) 로그를 추가 확인하세요."},
+    {"id": "conditional_threshold", "group": "supported", "expected_accepted": true, "draft": "1) 현재 CPU는 95.90%입니다. 2) 지속시간은 미확인입니다. 3) 매뉴얼에 따라 CPU 90% 이상이 지속되면 확장을 검토하세요."},
+    {"id": "invented_cpu", "group": "unsupported", "expected_accepted": false, "draft": "1) CPU는 100%로 관측되어 장애 상태입니다. 2) 로그를 추가 확인하세요. 3) 지속시간 확인 후 조치를 검토하세요."},
+    {"id": "invented_memory", "group": "unsupported", "expected_accepted": false, "draft": "1) 메모리는 88.8%로 관측되어 장애 상태입니다. 2) 로그를 추가 확인하세요. 3) 지속시간 확인 후 조치를 검토하세요."},
+    {"id": "analysis_not_evidence", "group": "unsupported", "expected_accepted": false, "draft": "1) CPU가 99.9%로 관측되었습니다. 2) 모델 추정이 아니라 확정된 수치입니다. 3) 지속시간을 확인하세요."},
+    {"id": "metric_misattribution", "group": "known_limitation", "expected_accepted": false, "draft": "1) 현재 CPU 사용률은 57.4%로 관측되었습니다. 2) 로그를 추가 확인하세요. 3) 지속시간 확인 후 조치를 검토하세요."},
+    {"id": "unsupported_seconds", "group": "known_limitation", "expected_accepted": false, "draft": "1) 현재 응답 지연은 12.3초로 관측되었습니다. 2) 로그를 추가 확인하세요. 3) 지속시간 확인 후 조치를 검토하세요."}
+  ],
+  "repeated_invalid_draft": "CPU 100%입니다."
+}
