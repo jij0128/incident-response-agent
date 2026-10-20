@@ -26,6 +26,8 @@ from pathlib import Path
 import httpx
 from langsmith import traceable
 
+from .grounding import REPORT_SYSTEM_PROMPT, render_evidence
+
 OPENAI_URL = "https://api.openai.com/v1/chat/completions"
 
 
@@ -214,23 +216,8 @@ class OpenAIQualityLLM(OpenAILLM):
         """ollama_llm.py와 인터페이스(on_token 콜백)만 맞춘다 — OpenAI Chat Completions를
         아직 stream=True로 호출하지 않아 토큰 단위 중계는 하지 않고 완성된 응답을 한 번에
         전달한다."""
-        system = ("당신은 ICT 운영 보고 작성자다. 수집된 사실만 사용해 한국어로 "
-                  "간결한 대응 보고를 작성하라. 반드시 '1) ... 2) ... 3) ...' 형식의 "
-                  "번호 절차로 답하고, 수치는 수집된 값을 그대로 인용하라.")
-        facts = []
-        for c in collected:
-            if c["source"] == "monitoring":
-                d = c["data"]
-                facts.append(f"- 모니터링 {d['system_name']}: 상태={d['status']}, "
-                             f"CPU {d['cpu_percent']}%, 메모리 {d['memory_percent']}%, "
-                             f"알림 {len(d['alerts'])}건 {d['alerts']}")
-            elif c["source"] == "runbook":
-                facts.append(f"- runbook 발췌:\n{c['data'].strip()}")
-            elif c["source"] == "analysis":
-                facts.append(f"- 패턴 분석: {c['data'].strip()}")
-        user = f"## 사용자 요청\n{query}\n\n## 수집된 사실\n" + "\n".join(facts)
-        if feedback:
-            user += f"\n\n## 이전 초안에 대한 검증 반려 사유 (반드시 반영)\n{feedback}"
+        system = REPORT_SYSTEM_PROMPT
+        user = render_evidence(query, collected, feedback)
         content, usage = self._chat(system, user)
         usage["prompt"] = f"[SYSTEM]\n{system}\n\n[USER]\n{user}"
         if on_token is not None:

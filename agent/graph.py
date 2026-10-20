@@ -21,6 +21,7 @@ from langgraph.graph import END, StateGraph
 from langsmith import traceable
 
 from .deps import SupervisorDeps
+from .grounding import observed_fallback, unsupported_percentages
 from .retry import with_retry
 
 
@@ -97,6 +98,7 @@ class AgentState(TypedDict, total=False):
     draft: str
     validation_attempts: int
     validation_feedback: str
+    validation_passed: bool
     final: str
     last_prompt: str
     cost_usd: float
@@ -308,19 +310,29 @@ async def write_node(state: AgentState, deps: SupervisorDeps) -> dict:
 
 @traceable(name="validate_node")
 async def validate_node(state: AgentState, deps: SupervisorDeps) -> dict:
-    """Wave 8 — 코드 기준 검증: 30자 이상 + 절차 번호 포함이어야 합격."""
+    """형식 및 퍼센트 인용을 검사하며, 3회 실패하면 관측 상태만 반환한다."""
     draft = state["draft"]
     attempts = state.get("validation_attempts", 0) + 1
-    ok = len(draft) >= 30 and "1)" in draft
+    issues = []
+    if len(draft) < 30 or "1)" not in draft:
+        issues.append("30자 이상으로 1) 2) 3) 번호 절차를 포함해 작성하세요.")
+    unsupported = unsupported_percentages(draft, state.get("collected", []))
+    if unsupported:
+        issues.append("수집 근거에 없는 수치 " + ", ".join(unsupported) +
+                      "를 삭제하거나 관측된 값으로 수정하세요.")
+    ok = not issues
     verdict = "합격" if ok else "불합격"
-    if not ok and attempts >= 3:   # 실모델 무한 재작성 방지 — 최대 3회 후 통과 처리
-        ok, verdict = True, "합격(최대 시도 도달 — 통과 처리)"
-    feedback = None if ok else (
-        f"응답이 너무 짧습니다({len(draft)}자, 최소 30자). 절차를 1) 2) 3) 번호로 "
-        f"구체적으로 설명하세요.")
-    event = {"type": "Validation", "attempt": attempts, "verdict": verdict}
-    return {"validation_attempts": attempts, "validation_feedback": feedback,
-            "events": state["events"] + [event]}
+    fallback = not ok and attempts >= 3
+    feedback = " ".join(issues) if issues and not fallback else None
+    if fallback:
+        verdict = "실패(관측 상태만 안내)"
+    event = {"type": "Validation", "attempt": attempts, "verdict": verdict,
+             "issues": issues, "fallback": fallback}
+    result = {"validation_attempts": attempts, "validation_feedback": feedback,
+              "validation_passed": ok, "events": state["events"] + [event]}
+    if fallback:
+        result["draft"] = observed_fallback(state.get("collected", []))
+    return result
 
 
 @traceable(name="finalize_node")

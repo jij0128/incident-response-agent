@@ -2,7 +2,7 @@
 import json
 import unittest
 from types import SimpleNamespace
-from unittest.mock import Mock
+from unittest.mock import AsyncMock, Mock
 
 from fastapi.testclient import TestClient
 
@@ -138,6 +138,28 @@ class TargetCheckApiTests(unittest.TestCase):
         events = self.stream_events("안녕, 너는 누구야?", "chat-stream")
         self.assertTrue(any(e["type"] == "AnswerToken" for e in events))
         self.assertTrue(any(e["type"] == "FinalAnswer" for e in events))
+
+    def test_repeated_bad_percentages_finish_without_passing_invalid_draft(self):
+        invalid = "1) CPU 99.9%로 장애가 발생했습니다. 2) 로그를 확인하세요. 3) 지속시간을 확인하세요."
+        writer = AsyncMock(return_value=(invalid, {"usd": 0}))
+        self.state.deps.quality_llm.write = writer
+        query = "payments-service CPU 급증 원인 진단해줘"
+
+        response = self.client.post("/chat", json={"message": query, "thread_id": "bad-post"})
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertFalse(body["metadata"]["validation_passed"])
+        self.assertEqual(body["metadata"]["validation_attempts"], 3)
+        self.assertNotIn("99.9%", body["reply"])
+
+        events = self.stream_events(query, "bad-stream")
+        validations = [e for e in events if e["type"] == "Validation"]
+        self.assertEqual(len(validations), 3)
+        self.assertTrue(validations[-1]["fallback"])
+        self.assertNotEqual(validations[-1]["verdict"], "합격")
+        final = next(e for e in events if e["type"] == "FinalAnswer")
+        self.assertNotIn("99.9%", final["reply"])
+        self.assertIn("91.0%", final["reply"])
 
 
 if __name__ == "__main__":
