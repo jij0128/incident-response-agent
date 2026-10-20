@@ -6,6 +6,8 @@ SKALA AI Mini-Project의 **1번 과제: 제공된 Base AI Agent 개선**으로 �
 
 모니터링은 실제 운영 서비스가 아닌 `data/monitoring.json` 기반의 모의 데이터입니다. CPU·메모리에는 호출마다 변동값이 추가됩니다. 서비스 재시작·확장·롤백을 실행하는 기능은 없습니다.
 
+결과와 근거는 [프로젝트 결과 보고서](doc/PROJECT_REPORT.md), [발표자료·발표 대본](doc/presentation/), [2일차 완료 및 3일차 준비](doc/DAY2_STATUS.md)에 정리했습니다.
+
 ## 개선한 문제
 
 | 문제 | 개선 내용 | 확인 상태 |
@@ -99,7 +101,7 @@ bash sh/run_frontend.sh
 bash sh/run_agent_openai.sh
 ```
 
-이번 개선의 OpenAI 호출부는 테스트용 응답으로 검증했습니다. 실제 OpenAI 모델 호출을 이용한 최종 확인은 아직 진행하지 않았습니다.
+2026-10-20 실제 OpenAI·MCP·FastAPI SSE 경로로 등록·미등록·혼합 질문을 확인했습니다. 등록 질문은 API 4회·1,697토큰으로 검증 1회 합격했고, 나머지는 API 호출 없이 이름 확인 요청으로 종료했습니다. LangSmith 추적은 껐으며 브라우저·프록시는 이 실행에 포함하지 않았습니다. [조건·결과·한계](eval/results/openai_check.md)를 참고하세요.
 
 ## 관리자 화면
 
@@ -219,6 +221,10 @@ LANGCHAIN_TRACING_V2=false LANGSMITH_TRACING=false .venv/bin/python3 -m unittest
 
 ## 상세 문서
 
+- [프로젝트 결과 보고서](doc/PROJECT_REPORT.md)
+- [발표자료와 대본](doc/presentation/)
+- [2일차 완료 상태와 3일차 준비](doc/DAY2_STATUS.md)
+- [실제 OpenAI 검증](eval/results/openai_check.md)
 - [제공된 베이스 프로젝트 설명](doc/README.md)
 - [회귀 테스트 질문 및 개선 확인 기록](doc/regression_test_queries.md)
 - [Ollama 사용 안내](doc/manual_ollma.md)

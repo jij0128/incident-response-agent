@@ -1,0 +1,59 @@
+{
+  "checked_at": "2026-10-20T16:39:51+09:00",
+  "implementation_commit": "af02f56e98f66ddca9a1b881433039a7317ce63a",
+  "checks": {
+    "python_unittest": {
+      "passed": 23,
+      "failed": 0,
+      "command": "LANGCHAIN_TRACING_V2=false LANGSMITH_TRACING=false .venv/bin/python3 -m unittest discover -s tests -v"
+    },
+    "frontend_node_test": {
+      "passed": 8,
+      "failed": 0,
+      "command": "node --test tests/frontend_chat.test.cjs"
+    },
+    "openai": {
+      "cases_passed": 3,
+      "api_calls": 4,
+      "usage_tokens": 1697,
+      "raw_result": "openai_check.json"
+    },
+    "local_markdown_links": {
+      "checked_files": 6,
+      "missing": []
+    },
+    "presentation": {
+      "slides": 12,
+      "speaker_note_parts": 12,
+      "editable_tables": 6,
+      "package_layout_import_checks": "passed",
+      "individual_final_slide_renders_reviewed": 12,
+      "native_powerpoint_opened": false
+    },
+    "pages": {
+      "native_app_saved_and_reopened": true,
+      "pages": 12,
+      "text_and_tables_editable": true,
+      "native_pdf_export_reviewed_pages": 12,
+      "rasterizer": "macOS PDFKit",
+      "filename": "doc/presentation/incident-response-agent.pages"
+    }
+  },
+  "artifact_sha256": {
+    "eval/check_openai.py": "23c1f48f88855f3a4a18d78c82ef3922d9caf815d74053607349bb18d902f9d4",
+    "eval/results/openai_check.json": "208e8d403b61ce618bd6d816cdce2ddf18c6ba8f6426bce57f66e436c9136554",
+    "eval/results/openai_check.md": "6ff7fa8f5e86339562253baa7481937e751fc5a0853712a3e03caa856caddec3",
+    "doc/PROJECT_REPORT.md": "0d6e952dacf7275eb4ad61f497b79a5a4360daa8ab180eeff58125b61a58e73b",
+    "doc/DAY2_STATUS.md": "dfb6bd87c5f75482923faca750b5a6acf548eaf9179ba54bd2210ebd5a3eb85e",
+    "doc/presentation/incident-response-agent.pptx": "d4e015f484f7cb3b1b449574eaedc20212088ab03860027f58ffa61d87e5fed6",
+    "doc/presentation/SPEAKER_NOTES.md": "651805699cdb6e13096c517286d0273fb25219afb31d842ab2b91b7bd21d2c09",
+    "doc/presentation/incident-response-agent.pages": "daca1f826803ac3522f1d0c6e0ac1a62fce85e8bcdaad77f066f44a954738f91",
+    "doc/presentation/README.md": "4eb27b67c429dd829dae8d6645c5ee2b1c6c778dbdbbe3617b1442d0afd43e95"
+  },
+  "not_performed": [
+    "Git commit/push",
+    "Shared sheet edit",
+    "Final submission",
+    "PowerPoint application review"
+  ]
+}

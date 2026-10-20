@@ -1,0 +1,273 @@
+{
+  "experiment": "real_openai_mcp_fastapi_sse",
+  "started_at": "2026-10-20T16:33:03+09:00",
+  "commit": "af02f56e98f66ddca9a1b881433039a7317ce63a",
+  "models": {
+    "fast": "gpt-4o-mini",
+    "quality": "gpt-4o"
+  },
+  "tracing_enabled": false,
+  "conditions": [
+    "실제 OpenAI와 MCP stdio 서버",
+    "FastAPI ASGI SSE 경로, 브라우저/프록시 미포함",
+    "출력 상한: fast 700 / quality 1100 토큰",
+    "총 유료 호출 상한 6회",
+    "실제 MCP 모의 데이터의 무작위 변동과 최초 재시도 포함",
+    "임시 SQLite DB, 기존 서버와 DB 유지"
+  ],
+  "source_sha256": {
+    "agent/openai_llm.py": "91a9ed19615ead8a65e6058de6f3e3215bc896266ff67eaf96c81006393fc19f",
+    "agent/graph.py": "3fa6cfeb33d87428de53d2ffc6ddb813ca40e4014be73d39b2a9d07af8795934",
+    "agent/grounding.py": "2e6dbaa3b80f2623aa6a883d10120816504d0b30102977517d39f5df63a32661",
+    "server.py": "aedf7802b63667a193be09283714184bfd02288596f39bff47ae6b6bb05c29cd",
+    "eval/check_openai.py": "23c1f48f88855f3a4a18d78c82ef3922d9caf815d74053607349bb18d902f9d4"
+  },
+  "cases": [
+    {
+      "id": "cpu_incident",
+      "query": "payments-service 결제 응답이 느려지고 CPU가 치솟았어요, 원인 확인해주세요.",
+      "events": [
+        {
+          "type": "RouteDecided",
+          "route": "incident",
+          "node": "route"
+        },
+        {
+          "type": "PlanCreated",
+          "task_count": 2,
+          "targets": [
+            "payments-service"
+          ],
+          "node": "plan"
+        },
+        {
+          "type": "GateApplied",
+          "removed_analysis_tasks": 0,
+          "node": "gate"
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-0",
+          "source": "monitoring",
+          "target": "payments-service",
+          "retries": 1,
+          "node": "research"
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 0,
+          "is_sufficient": false,
+          "gap_task": "task-gap-runbook",
+          "target": "cpu-spike",
+          "node": "replan_check"
+        },
+        {
+          "type": "TaskCompleted",
+          "id": "task-gap-runbook",
+          "source": "runbook",
+          "target": "cpu-spike",
+          "retries": 0,
+          "node": "research"
+        },
+        {
+          "type": "ReplanCheck",
+          "round": 1,
+          "is_sufficient": true,
+          "node": "replan_check"
+        },
+        {
+          "type": "AnalysisCompleted",
+          "length": 8,
+          "node": "analysis"
+        },
+        {
+          "type": "AnswerToken",
+          "attempt": 1,
+          "delta": "1) 확인된 사실\n- payments-service의 상태는 'degraded'로 확인되었으며, CPU 사용률은 98.8%, 메모리 사용률은 58.9%입니다.\n- 알림에는 'CPU 91% (threshold 80%)'와 'payments-service-3 instance responding slow'가 기록되어 있습니다.\n\n2) 추가 확인 사항\n- 최근 배포 시점과 트래픽 변화 이력은 미수집으로 확인되지 않음.\n- 반복 호출이나 배치 작업 중복 실행 같은 특정 요청 패턴은 로그 미수집으로 확인되지 않음.\n\n3) 조건부 권고\n- CPU 사용률이 90%를 넘고 지속되는 경우, 오토스케일링 그룹에서 인스턴스를 추가하여 부하를 분산하는 방안을 검토하십시오.\n- 급증이 특정 배포 직후 시작된 경우, 직전 배포를 롤백하고 원인 분석을 별도로 진행하십시오.\n- 정상화 후에는 프로파일링 결과를 바탕으로 핫스팟 코드를 식별하여 최적화 작업을 등록하는 것을 고려하십시오."
+        },
+        {
+          "type": "DraftWritten",
+          "attempt": 1,
+          "length": 483,
+          "node": "write"
+        },
+        {
+          "type": "Validation",
+          "attempt": 1,
+          "verdict": "합격",
+          "issues": [],
+          "fallback": false,
+          "node": "validate"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "incident-v2",
+          "node": "finalize"
+        },
+        {
+          "type": "FinalAnswer",
+          "reply": "1) 확인된 사실\n- payments-service의 상태는 'degraded'로 확인되었으며, CPU 사용률은 98.8%, 메모리 사용률은 58.9%입니다.\n- 알림에는 'CPU 91% (threshold 80%)'와 'payments-service-3 instance responding slow'가 기록되어 있습니다.\n\n2) 추가 확인 사항\n- 최근 배포 시점과 트래픽 변화 이력은 미수집으로 확인되지 않음.\n- 반복 호출이나 배치 작업 중복 실행 같은 특정 요청 패턴은 로그 미수집으로 확인되지 않음.\n\n3) 조건부 권고\n- CPU 사용률이 90%를 넘고 지속되는 경우, 오토스케일링 그룹에서 인스턴스를 추가하여 부하를 분산하는 방안을 검토하십시오.\n- 급증이 특정 배포 직후 시작된 경우, 직전 배포를 롤백하고 원인 분석을 별도로 진행하십시오.\n- 정상화 후에는 프로파일링 결과를 바탕으로 핫스팟 코드를 식별하여 최적화 작업을 등록하는 것을 고려하십시오."
+        }
+      ],
+      "error": null,
+      "final": "1) 확인된 사실\n- payments-service의 상태는 'degraded'로 확인되었으며, CPU 사용률은 98.8%, 메모리 사용률은 58.9%입니다.\n- 알림에는 'CPU 91% (threshold 80%)'와 'payments-service-3 instance responding slow'가 기록되어 있습니다.\n\n2) 추가 확인 사항\n- 최근 배포 시점과 트래픽 변화 이력은 미수집으로 확인되지 않음.\n- 반복 호출이나 배치 작업 중복 실행 같은 특정 요청 패턴은 로그 미수집으로 확인되지 않음.\n\n3) 조건부 권고\n- CPU 사용률이 90%를 넘고 지속되는 경우, 오토스케일링 그룹에서 인스턴스를 추가하여 부하를 분산하는 방안을 검토하십시오.\n- 급증이 특정 배포 직후 시작된 경우, 직전 배포를 롤백하고 원인 분석을 별도로 진행하십시오.\n- 정상화 후에는 프로파일링 결과를 바탕으로 핫스팟 코드를 식별하여 최적화 작업을 등록하는 것을 고려하십시오.",
+      "done": true,
+      "passed": true,
+      "elapsed_seconds": 7.3942,
+      "api_call_count": 4
+    },
+    {
+      "id": "unknown_service",
+      "query": "billing-service 응답이 느려요. 원인 확인해주세요.",
+      "events": [
+        {
+          "type": "TargetClarification",
+          "unknown_systems": [
+            "billing-service"
+          ],
+          "node": "target_check"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "target-clarification",
+          "node": "target_check"
+        },
+        {
+          "type": "FinalAnswer",
+          "reply": "`billing-service`는 등록된 모니터링 대상에서 찾을 수 없습니다. 시스템명을 확인해주세요."
+        }
+      ],
+      "error": null,
+      "final": "`billing-service`는 등록된 모니터링 대상에서 찾을 수 없습니다. 시스템명을 확인해주세요.",
+      "done": true,
+      "passed": true,
+      "elapsed_seconds": 0.0057,
+      "api_call_count": 0
+    },
+    {
+      "id": "mixed_targets",
+      "query": "payments-service와 billing-service 둘 다 응답이 느려요. 원인 확인해주세요.",
+      "events": [
+        {
+          "type": "TargetClarification",
+          "unknown_systems": [
+            "billing-service"
+          ],
+          "node": "target_check"
+        },
+        {
+          "type": "Finalize",
+          "pipeline": "target-clarification",
+          "node": "target_check"
+        },
+        {
+          "type": "FinalAnswer",
+          "reply": "`billing-service`는 등록된 모니터링 대상에서 찾을 수 없습니다. 시스템명을 확인해주세요."
+        }
+      ],
+      "error": null,
+      "final": "`billing-service`는 등록된 모니터링 대상에서 찾을 수 없습니다. 시스템명을 확인해주세요.",
+      "done": true,
+      "passed": true,
+      "elapsed_seconds": 0.0047,
+      "api_call_count": 0
+    }
+  ],
+  "api_calls": [
+    {
+      "model": "gpt-4o-mini",
+      "max_completion_tokens": 700,
+      "elapsed_seconds": 0.817,
+      "http_status": 200,
+      "usage": {
+        "prompt_tokens": 145,
+        "completion_tokens": 12,
+        "total_tokens": 157,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "actual_model": "gpt-4o-mini-2024-07-18",
+      "finish_reason": "stop"
+    },
+    {
+      "model": "gpt-4o-mini",
+      "max_completion_tokens": 700,
+      "elapsed_seconds": 1.1995,
+      "http_status": 200,
+      "usage": {
+        "prompt_tokens": 315,
+        "completion_tokens": 54,
+        "total_tokens": 369,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "actual_model": "gpt-4o-mini-2024-07-18",
+      "finish_reason": "stop"
+    },
+    {
+      "model": "gpt-4o-mini",
+      "max_completion_tokens": 700,
+      "elapsed_seconds": 1.0254,
+      "http_status": 200,
+      "usage": {
+        "prompt_tokens": 112,
+        "completion_tokens": 5,
+        "total_tokens": 117,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "actual_model": "gpt-4o-mini-2024-07-18",
+      "finish_reason": "stop"
+    },
+    {
+      "model": "gpt-4o",
+      "max_completion_tokens": 1100,
+      "elapsed_seconds": 3.0535,
+      "http_status": 200,
+      "usage": {
+        "prompt_tokens": 812,
+        "completion_tokens": 242,
+        "total_tokens": 1054,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "actual_model": "gpt-4o-2024-08-06",
+      "finish_reason": "stop"
+    }
+  ],
+  "complete": true,
+  "all_passed": true,
+  "total_tokens_received": 1697
+}
