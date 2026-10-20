@@ -47,7 +47,7 @@
     "doc/DAY2_STATUS.md": "dfb6bd87c5f75482923faca750b5a6acf548eaf9179ba54bd2210ebd5a3eb85e",
     "doc/presentation/incident-response-agent.pptx": "d4e015f484f7cb3b1b449574eaedc20212088ab03860027f58ffa61d87e5fed6",
     "doc/presentation/SPEAKER_NOTES.md": "651805699cdb6e13096c517286d0273fb25219afb31d842ab2b91b7bd21d2c09",
-    "doc/presentation/incident-response-agent.pages": "daca1f826803ac3522f1d0c6e0ac1a62fce85e8bcdaad77f066f44a954738f91",
+    "doc/presentation/incident-response-agent.pages": "e017d2344ba1a12cf8a9dadc00d861378bec0ab0780aae8c57c004a57d3dbdeb",
     "doc/presentation/README.md": "4eb27b67c429dd829dae8d6645c5ee2b1c6c778dbdbbe3617b1442d0afd43e95"
   },
   "not_performed": [
@@ -55,5 +55,7 @@
     "Shared sheet edit",
     "Final submission",
     "PowerPoint application review"
-  ]
+  ],
+  "artifact_hashes_checked_at": "2026-10-20T17:34:59+09:00",
+  "artifact_hashes_note": "현재 산출물 9개와 SHA-256 대조 완료. Pages 파일 해시를 갱신했으며, 기존 모델·브라우저·자동 테스트를 새로 실행했다는 뜻은 아니다."
 }
