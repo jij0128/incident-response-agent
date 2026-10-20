@@ -1,0 +1,55 @@
+{
+  "verified_at": "2026-10-20T14:46:21+09:00",
+  "commit": "f4b2831cd3141bef5bebda5bbd186054809335bc",
+  "health": {
+    "status": "ok",
+    "instance_id": 4490251280,
+    "creation_count": 1,
+    "supervisor_version": "v2",
+    "llm_backend": "ollama",
+    "fast_llm": "ollama:qwen3:0.6b",
+    "quality_llm": "ollama:qwen3:8b"
+  },
+  "tracing_enabled": false,
+  "data": "실제 MCP 서버의 모의 데이터. 무작위 CPU/메모리 변동 및 첫 호출 재시도 포함.",
+  "thread_id": "t-web-fx0rs4",
+  "messages_before_restart": 0,
+  "test_thread_messages_after": 6,
+  "cases": [
+    {
+      "id": "registered",
+      "query": "payments-service 결제 응답이 느려지고 CPU가 치솟았어요, 원인 확인해주세요.",
+      "ax": "Browser tab: 1397552388, Title: \"운영 에이전트 채팅 (Vue)\", URL: \"http://localhost:8600/\".\n1 AXWebArea 운영 에이전트 채팅 (Vue), URL: localhost:8600/\n\t2 container app\n\t\t3 container\n\t\t\t4 text 운영 인시던트 대응 에이전트  ollama 실모델(ollama:qwen3:0.6b/ollama:qwen3:8b) · all_total_vue\n\t\t8 container log\n\t\t\t9 text payments-service 결제 응답이 느려지고 CPU가 치솟았어요, 원인 확인해주세요.\n\t\t\t10 container\n\t\t\t\t11 text ⏳  계획 수립: 할 일 2가지 (시스템: payments-service)\n\t\t\t12 container\n\t\t\t\t13 text ⏳  불필요한 작업 1건 제거\n\t\t\t14 container\n\t\t\t\t15 text ⏳  모니터링 지표 확인 (시스템: payments-service) (재시도 성공)\n\t\t\t16 container\n\t\t\t\t17 text ⏳  정보 부족 → 장애유형 \"cpu-spike\"로 추가 조사\n\t\t\t18 container\n\t\t\t\t19 text ⏳  대응 매뉴얼(runbook) 조회 (장애유형: cpu-spike)\n\t\t\t20 container\n\t\t\t\t21 text ⏳  답변 초안 작성 (시도 1)\n\t\t\t22 container\n\t\t\t\t23 text ⏳  검수 통과 (형식·퍼센트 인용)\n\t\t\t24 container\n\t\t\t\t25 text ⏳  최종 답변 완성\n\t\t\t26 text 1) 확인된 사실  \n- payments-service 상태: degraded  \n- 현재 CPU 사용률: 94.3% (임계치 80%)  \n- 메모리 사용률: 56.7%  \n- 알림 내용: 'CPU 91% (threshold 80%)', 'payments-service-3 instance responding slow'  \n\n2) 추가 확인 사항  \n- 배포 이력, 트래픽 변화 이력, 시계열 지표, 로그 원문, 프로파일링 결과는 조회 범위에 포함되지 않음.  \n- CPU 사용률 지속 시간 또는 변화 추이 판단 불가 (단일 시점 수치 기준).  \n- 특정 요청 패턴 확인 불가 (로그 미수집).  \n- 배포 시점 확인 불가 (별도 기록 없음).  \n\n3) 조건부 권고  \n- CPU 사용률이 90% 이상 지속될 경우, 오토스케일링 그룹에서 인스턴스 추가 권고 (지속 시간 확인 필요).  \n- 특정 배포 직후 CPU 급증 시, 롤백 절차 검토 권고 (배포 이력 확인 필요).  \n- 정상화 후 프로파일링 결과 분석을 위한 최적화 작업 등록 권고 (프로파일링 데이터 미수집).\n\t\t5 container\n\t\t\t6 text field (settable)\n\t\t\t7 button 보내기\n\nThe focused UI element is 1 AXWebArea 운영 에이전트 채팅 (Vue), URL: localhost:8600/",
+      "screenshot": "registered.jpg",
+      "saved_reply": "1) 확인된 사실  \n- payments-service 상태: degraded  \n- 현재 CPU 사용률: 94.3% (임계치 80%)  \n- 메모리 사용률: 56.7%  \n- 알림 내용: 'CPU 91% (threshold 80%)', 'payments-service-3 instance responding slow'  \n\n2) 추가 확인 사항  \n- 배포 이력, 트래픽 변화 이력, 시계열 지표, 로그 원문, 프로파일링 결과는 조회 범위에 포함되지 않음.  \n- CPU 사용률 지속 시간 또는 변화 추이 판단 불가 (단일 시점 수치 기준).  \n- 특정 요청 패턴 확인 불가 (로그 미수집).  \n- 배포 시점 확인 불가 (별도 기록 없음).  \n\n3) 조건부 권고  \n- CPU 사용률이 90% 이상 지속될 경우, 오토스케일링 그룹에서 인스턴스 추가 권고 (지속 시간 확인 필요).  \n- 특정 배포 직후 CPU 급증 시, 롤백 절차 검토 권고 (배포 이력 확인 필요).  \n- 정상화 후 프로파일링 결과 분석을 위한 최적화 작업 등록 권고 (프로파일링 데이터 미수집)."
+    },
+    {
+      "id": "unknown",
+      "query": "billing-service 응답이 느려요. 원인 확인해주세요.",
+      "ax": "Browser tab: 1397552388, Title: \"운영 에이전트 채팅 (Vue)\", URL: \"http://localhost:8600/\".\n1 AXWebArea 운영 에이전트 채팅 (Vue), URL: localhost:8600/\n\t2 container app\n\t\t3 container\n\t\t\t4 text 운영 인시던트 대응 에이전트  ollama 실모델(ollama:qwen3:0.6b/ollama:qwen3:8b) · all_total_vue\n\t\t8 container log\n\t\t\t9 text payments-service 결제 응답이 느려지고 CPU가 치솟았어요, 원인 확인해주세요.\n\t\t\t10 container\n\t\t\t\t11 text ⏳  계획 수립: 할 일 2가지 (시스템: payments-service)\n\t\t\t12 container\n\t\t\t\t13 text ⏳  불필요한 작업 1건 제거\n\t\t\t14 container\n\t\t\t\t15 text ⏳  모니터링 지표 확인 (시스템: payments-service) (재시도 성공)\n\t\t\t16 container\n\t\t\t\t17 text ⏳  정보 부족 → 장애유형 \"cpu-spike\"로 추가 조사\n\t\t\t18 container\n\t\t\t\t19 text ⏳  대응 매뉴얼(runbook) 조회 (장애유형: cpu-spike)\n\t\t\t20 container\n\t\t\t\t21 text ⏳  답변 초안 작성 (시도 1)\n\t\t\t22 container\n\t\t\t\t23 text ⏳  검수 통과 (형식·퍼센트 인용)\n\t\t\t24 container\n\t\t\t\t25 text ⏳  최종 답변 완성\n\t\t\t26 text 1) 확인된 사실  \n- payments-service 상태: degraded  \n- 현재 CPU 사용률: 94.3% (임계치 80%)  \n- 메모리 사용률: 56.7%  \n- 알림 내용: 'CPU 91% (threshold 80%)', 'payments-service-3 instance responding slow'  \n\n2) 추가 확인 사항  \n- 배포 이력, 트래픽 변화 이력, 시계열 지표, 로그 원문, 프로파일링 결과는 조회 범위에 포함되지 않음.  \n- CPU 사용률 지속 시간 또는 변화 추이 판단 불가 (단일 시점 수치 기준).  \n- 특정 요청 패턴 확인 불가 (로그 미수집).  \n- 배포 시점 확인 불가 (별도 기록 없음).  \n\n3) 조건부 권고  \n- CPU 사용률이 90% 이상 지속될 경우, 오토스케일링 그룹에서 인스턴스 추가 권고 (지속 시간 확인 필요).  \n- 특정 배포 직후 CPU 급증 시, 롤백 절차 검토 권고 (배포 이력 확인 필요).  \n- 정상화 후 프로파일링 결과 분석을 위한 최적화 작업 등록 권고 (프로파일링 데이터 미수집).\n\t\t\t27 text billing-service 응답이 느려요. 원인 확인해주세요.\n\t\t\t28 container\n\t\t\t\t29 text ⏳  미등록 시스템 발견 → 시스템명 확인 필요\n\t\t\t30 container\n\t\t\t\t31 text ⏳  최종 답변 완성\n\t\t\t32 text `billing-service`는 등록된 모니터링 대상에서 찾을 수 없습니다. 시스템명을 확인해주세요.\n\t\t5 container\n\t\t\t6 text field (settable)\n\t\t\t7 button 보내기\n\nThe focused UI element is 1 AXWebArea 운영 에이전트 채팅 (Vue), URL: localhost:8600/",
+      "screenshot": "unknown.jpg",
+      "saved_reply": "`billing-service`는 등록된 모니터링 대상에서 찾을 수 없습니다. 시스템명을 확인해주세요."
+    },
+    {
+      "id": "mixed",
+      "query": "payments-service와 billing-service 둘 다 응답이 느려요. 원인 확인해주세요.",
+      "ax": "Browser tab: 1397552388, Title: \"운영 에이전트 채팅 (Vue)\", URL: \"http://localhost:8600/\".\n1 AXWebArea 운영 에이전트 채팅 (Vue), URL: localhost:8600/\n\t2 container app\n\t\t3 container\n\t\t\t4 text 운영 인시던트 대응 에이전트  ollama 실모델(ollama:qwen3:0.6b/ollama:qwen3:8b) · all_total_vue\n\t\t8 container log\n\t\t\t9 text payments-service 결제 응답이 느려지고 CPU가 치솟았어요, 원인 확인해주세요.\n\t\t\t10 container\n\t\t\t\t33 text ⏳  계획 수립: 할 일 2가지 (시스템: payments-service)\n\t\t\t12 container\n\t\t\t\t34 text ⏳  불필요한 작업 1건 제거\n\t\t\t14 container\n\t\t\t\t35 text ⏳  모니터링 지표 확인 (시스템: payments-service) (재시도 성공)\n\t\t\t16 container\n\t\t\t\t36 text ⏳  정보 부족 → 장애유형 \"cpu-spike\"로 추가 조사\n\t\t\t18 container\n\t\t\t\t37 text ⏳  대응 매뉴얼(runbook) 조회 (장애유형: cpu-spike)\n\t\t\t20 container\n\t\t\t\t38 text ⏳  답변 초안 작성 (시도 1)\n\t\t\t22 container\n\t\t\t\t39 text ⏳  검수 통과 (형식·퍼센트 인용)\n\t\t\t24 container\n\t\t\t\t40 text ⏳  최종 답변 완성\n\t\t\t26 text 1) 확인된 사실  \n- payments-service 상태: degraded  \n- 현재 CPU 사용률: 94.3% (임계치 80%)  \n- 메모리 사용률: 56.7%  \n- 알림 내용: 'CPU 91% (threshold 80%)', 'payments-service-3 instance responding slow'  \n\n2) 추가 확인 사항  \n- 배포 이력, 트래픽 변화 이력, 시계열 지표, 로그 원문, 프로파일링 결과는 조회 범위에 포함되지 않음.  \n- CPU 사용률 지속 시간 또는 변화 추이 판단 불가 (단일 시점 수치 기준).  \n- 특정 요청 패턴 확인 불가 (로그 미수집).  \n- 배포 시점 확인 불가 (별도 기록 없음).  \n\n3) 조건부 권고  \n- CPU 사용률이 90% 이상 지속될 경우, 오토스케일링 그룹에서 인스턴스 추가 권고 (지속 시간 확인 필요).  \n- 특정 배포 직후 CPU 급증 시, 롤백 절차 검토 권고 (배포 이력 확인 필요).  \n- 정상화 후 프로파일링 결과 분석을 위한 최적화 작업 등록 권고 (프로파일링 데이터 미수집).\n\t\t\t27 text billing-service 응답이 느려요. 원인 확인해주세요.\n\t\t\t28 container\n\t\t\t\t41 text ⏳  미등록 시스템 발견 → 시스템명 확인 필요\n\t\t\t30 container\n\t\t\t\t42 text ⏳  최종 답변 완성\n\t\t\t32 text `billing-service`는 등록된 모니터링 대상에서 찾을 수 없습니다. 시스템명을 확인해주세요.\n\t\t\t43 text payments-service와 billing-service 둘 다 응답이 느려요. 원인 확인해주세요.\n\t\t\t44 container\n\t\t\t\t45 text ⏳  미등록 시스템 발견 → 시스템명 확인 필요\n\t\t\t46 container\n\t\t\t\t47 text ⏳  최종 답변 완성\n\t\t\t48 text `billing-service`는 등록된 모니터링 대상에서 찾을 수 없습니다. 시스템명을 확인해주세요.\n\t\t5 container\n\t\t\t6 text field (settable)\n\t\t\t7 button 보내기\n\nThe focused UI element is 1 AXWebArea 운영 에이전트 채팅 (Vue), URL: localhost:8600/",
+      "screenshot": "mixed.jpg",
+      "saved_reply": "`billing-service`는 등록된 모니터링 대상에서 찾을 수 없습니다. 시스템명을 확인해주세요."
+    }
+  ],
+  "source_sha256": {
+    "agent/grounding.py": "2e6dbaa3b80f2623aa6a883d10120816504d0b30102977517d39f5df63a32661",
+    "agent/graph.py": "3fa6cfeb33d87428de53d2ffc6ddb813ca40e4014be73d39b2a9d07af8795934",
+    "server.py": "aedf7802b63667a193be09283714184bfd02288596f39bff47ae6b6bb05c29cd",
+    "web_demo_server.py": "46cc1cbb9534f5b9d8d2035c944ba004b5d9d8ce7cae65eeeba2f2d525a354f4",
+    "web_chat.html": "bff047964b0da6e62843c919fe28f2fd5f2ce92618e92db906815b611f96437a",
+    "mcp_server.py": "a0ebe98254b12a8732be104094c2ddf91c182a69d9a3ff6ce3f49fb858d2369f"
+  },
+  "screenshots_sha256": {
+    "registered.jpg": "aaff67dee86137a90820ebdd57143df771087f93e038c1c7186155d67a2e5c2a",
+    "unknown.jpg": "2454c1e064af5d7f018ed89d8246aadfc58a74e09187641f2160e39c1b842a7c",
+    "mixed.jpg": "88b211132feb3d39ca22bf8539236c0bfad8e008d5c73e06bc0245ffeb5fb779"
+  },
+  "limitations": "단일 브라우저, 사례당 1회. 진행 단계와 최종 응답 및 버튼 복귀를 관찰. 원시 SSE 패킷과 토큰별 시간은 별도 수집하지 않음."
+}

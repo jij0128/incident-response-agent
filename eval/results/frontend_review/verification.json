@@ -1,0 +1,43 @@
+{
+  "verified_at": "2026-10-20T15:15:53+09:00",
+  "base_commit": "f4b2831cd3141bef5bebda5bbd186054809335bc",
+  "source_state": "커밋 전 작업 트리",
+  "reference": "https://github.com/emilkowalski/skills/blob/main/skills/emil-design-eng/SKILL.md",
+  "automated_checks": {
+    "frontend_mock_events": 8,
+    "backend_mock_tests": 23
+  },
+  "browser": "Chrome",
+  "real_chat_cases": [
+    "registered payments-service",
+    "unknown billing-service",
+    "mixed payments-service and billing-service"
+  ],
+  "models": [
+    "qwen3:0.6b",
+    "qwen3:8b"
+  ],
+  "langsmith_tracing": false,
+  "mobile_observation": {
+    "requested_viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "css_client_width": 433,
+    "css_scroll_width": 433,
+    "override_reset": true
+  },
+  "admin_observation": "실제 인증 후 현재 capstone-all-total 프로젝트 0건 조회. 읽기만 수행한 뒤 연결 해제.",
+  "source_sha256": {
+    "web_chat.html": "76797b544b0b301499391a73c386a927cde73dd7c0bbd67ef28772a7bcf0a0ff",
+    "admin.html": "20eedfb087f69147c1b7a54acd37cef12e26a9ab64ad08a3e83adad6e8b16875",
+    "tests/frontend_chat.test.cjs": "f20edbc22d5ca4fa1293d589f5d7833e678c357bb29b520ec84d2ab4300fdc12"
+  },
+  "screenshots_sha256": {
+    "admin_desktop.jpg": "662964dbd2285ddb3c6c4b914634dd45bc6db43679712642c7a2c96bf661c229",
+    "chat_clarification.jpg": "cc598578deb575e103a2fec3787dd1651e79d8c16b3cb01c7e1be9a891d6ee5e",
+    "chat_desktop.jpg": "45062af52f9c757d16c7c44fb53affcad51c8684adf649f5cb13446ef4d21351",
+    "chat_mobile.jpg": "9e8d1b5e951a1161c3b05e96613cf244e048470b6114aed738af20062989eb17",
+    "chat_result.jpg": "757962a9f54b587551cfa37d0bd618819c08649d38f942da6c20eadcf5e0e3ed"
+  }
+}
