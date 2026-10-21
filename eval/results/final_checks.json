@@ -19,7 +19,9 @@
       "raw_result": "openai_check.json"
     },
     "local_markdown_links": {
+      "checked_at": "2026-10-21T16:30:59+09:00",
       "checked_files": 6,
+      "local_targets_checked": 75,
       "missing": []
     },
     "presentation": {
@@ -37,18 +39,72 @@
       "native_pdf_export_reviewed_pages": 12,
       "rasterizer": "macOS PDFKit",
       "filename": "doc/presentation/incident-response-agent.pages"
+    },
+    "dark_theme": {
+      "checked_at": "2026-10-21T16:16:45+09:00",
+      "frontend_tests_passed": 8,
+      "backend_tests_rerun": false,
+      "browser": "Chrome 실제 Ollama 등록 질문·모바일 미등록 확인·모의 관리자 표/상세",
+      "verification": "dark_theme_review/verification.json",
+      "scope": "CSS·theme-color만 변경, JS·API·진단 로직 유지"
+    },
+    "final_report_guidance": {
+      "checked_at": "2026-10-21T16:30:59+09:00",
+      "identity": "SKALA 광주 2반 / G065 / 정인제",
+      "mandatory_sections": 5,
+      "presentation_seconds": 300,
+      "script_seconds": 270,
+      "transition_buffer_seconds": 30,
+      "deadline": "2026-10-22T13:00:00+09:00",
+      "presentation_session_start": "2026-10-22T13:10:00+09:00",
+      "material_format": "자율 선택: 보고서·Pages·시연 등",
+      "unimplemented_explicit": [
+        "RAG / Vector DB",
+        "LLM-as-a-Judge"
+      ],
+      "updated_files": [
+        "README.md",
+        "doc/PROJECT_REPORT.md",
+        "doc/DAY2_STATUS.md",
+        "doc/presentation/README.md",
+        "doc/presentation/SPEAKER_NOTES.md"
+      ],
+      "binary_presentation_changed": false,
+      "anonymous_public_url_check": {
+        "checked_at": "2026-10-21T16:30:59+09:00",
+        "authentication_used": false,
+        "results": [
+          {
+            "url": "https://github.com/jij0128/incident-response-agent",
+            "http_status": 200,
+            "login_redirect": false
+          },
+          {
+            "url": "https://github.com/jij0128/incident-response-agent/blob/main/doc/PROJECT_REPORT.md",
+            "http_status": 200,
+            "login_redirect": false
+          }
+        ],
+        "scope": "기존 공개 버전의 익명 HTTP 접근 확인. 이번 로컬 수정은 푸시 전이며 원격 반영·제출 완료를 뜻하지 않는다."
+      },
+      "not_performed": [
+        "Native Pages/PPTX revision",
+        "Timed personal rehearsal",
+        "Git commit/push",
+        "Shared sheet submission"
+      ]
     }
   },
   "artifact_sha256": {
     "eval/check_openai.py": "23c1f48f88855f3a4a18d78c82ef3922d9caf815d74053607349bb18d902f9d4",
     "eval/results/openai_check.json": "208e8d403b61ce618bd6d816cdce2ddf18c6ba8f6426bce57f66e436c9136554",
     "eval/results/openai_check.md": "6ff7fa8f5e86339562253baa7481937e751fc5a0853712a3e03caa856caddec3",
-    "doc/PROJECT_REPORT.md": "0d6e952dacf7275eb4ad61f497b79a5a4360daa8ab180eeff58125b61a58e73b",
-    "doc/DAY2_STATUS.md": "dfb6bd87c5f75482923faca750b5a6acf548eaf9179ba54bd2210ebd5a3eb85e",
+    "doc/PROJECT_REPORT.md": "044a3754d9b14be7f4911d4ae1903fcdb2cec509a43ffe83c89e3661f81c21ca",
+    "doc/DAY2_STATUS.md": "7e697af70592ffea422ce1b04f516c76fdb8d0940168e0bfef176aa6330b11bc",
     "doc/presentation/incident-response-agent.pptx": "d4e015f484f7cb3b1b449574eaedc20212088ab03860027f58ffa61d87e5fed6",
-    "doc/presentation/SPEAKER_NOTES.md": "651805699cdb6e13096c517286d0273fb25219afb31d842ab2b91b7bd21d2c09",
+    "doc/presentation/SPEAKER_NOTES.md": "022b1494e3f83c0551422e987b3564531b4aa49e07e65dec77cdc6ab98b6685a",
     "doc/presentation/incident-response-agent.pages": "d1456734bdd0ca17e933eafb69782fda048e7db2cb7738d17c94cb796efb005d",
-    "doc/presentation/README.md": "4eb27b67c429dd829dae8d6645c5ee2b1c6c778dbdbbe3617b1442d0afd43e95"
+    "doc/presentation/README.md": "881b0bf7eff1955d0a3a9f4b82cc852c0ea60753c7f7d7fb8a987f8ff7bd1799"
   },
   "not_performed": [
     "Git commit/push",
@@ -56,6 +112,6 @@
     "Final submission",
     "PowerPoint application review"
   ],
-  "artifact_hashes_checked_at": "2026-10-20T17:48:05+09:00",
-  "artifact_hashes_note": "현재 산출물 9개와 SHA-256 대조 완료. Pages 파일 해시를 갱신했으며, 기존 모델·브라우저·자동 테스트를 새로 실행했다는 뜻은 아니다."
+  "artifact_hashes_checked_at": "2026-10-21T16:30:59+09:00",
+  "artifact_hashes_note": "등록 산출물 9개 SHA-256 대조 완료. 최신 제출 안내·표지·5분 대본 변경 문서의 해시를 갱신했다. 모델·앱 테스트 실행 시각은 checks 및 개별 기록을 따르며 이번 문서 수정으로 재실행하지 않았다."
 }

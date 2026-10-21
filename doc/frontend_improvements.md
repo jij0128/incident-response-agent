@@ -2,6 +2,24 @@
 
 기존 Vue 3 CDN과 FastAPI 프록시 구조를 유지하고 `web_chat.html`, `admin.html`을 수정했다. 참고 자료는 [Emil Kowalski의 emil-design-eng 스킬](https://github.com/emilkowalski/skills/blob/main/skills/emil-design-eng/SKILL.md)이다. 스킬을 전역 설치하거나 애니메이션 라이브러리를 추가하지 않고, 현재 서비스에 필요한 지침을 적용했다.
 
+## 현재 테마 — 2026-10-21
+
+사용자 요청에 따라 채팅과 관리자 화면을 검정·흰색 중심의 다크 테마로 변경했다. 검정 배경, 짙은 회색 패널, 흰색 주요 버튼과 회색 보조 문구를 사용한다. 초록색 강조를 없애고 키보드 포커스, 입력창, 초안·최종 답변, 오류 안내, 관리자 표·실행 이력에도 같은 색상 변수를 적용했다. 브라우저의 기본 입력·스크롤 UI도 어둡게 표시하도록 `color-scheme: dark`와 `theme-color`를 지정했다. 테마 전환 토글은 추가하지 않았다.
+
+기존 HTML 구조·반응형 배치·JavaScript는 유지했다. 프론트 이벤트 테스트 8개가 통과했고, 실제 Chrome과 기존 Ollama 서버에서 등록 질문의 최종 답변·입력창 복귀, 작은 화면의 미등록 대상 확인 안내를 확인했다. 관리자 표·상세·검증 이력·실행 트리·프롬프트·잘못된 키 오류는 별도 로컬 모의 공급자로 확인했다. 관리자 모의 화면의 2.40초·1,200토큰은 화면 확인용 값이며 실제 모델 측정이 아니다.
+
+모바일 검사는 요청 뷰포트 390×844, 실제 관측 CSS 폭 433px에서 수행했다. clientWidth와 scrollWidth가 모두 433px으로 가로 넘침이 없었으며 임시 뷰포트는 복구했다. 실제 휴대폰이나 전체 접근성 인증 검사는 아니다. 등록 질문의 현재 CPU는 90.3%·메모리 54.6%였고 알림 CPU 91%와 구분했다. 이 실행은 테마 변경 후 동작 확인이며 전후 성능 비교가 아니다. 기존 서버·대화 DB·추적 설정을 유지했고 OpenAI 호출이나 LangSmith 추가 전송은 하지 않았다.
+
+![검정·흰색 다크 테마](../eval/results/dark_theme_review/chat_desktop.png)
+
+- [답변 화면](../eval/results/dark_theme_review/chat_result.png)
+- [작은 화면](../eval/results/dark_theme_review/chat_mobile.png)
+- [미등록 대상 확인 안내](../eval/results/dark_theme_review/chat_clarification.png)
+- [관리자 표·상세 — 로컬 모의 데이터](../eval/results/dark_theme_review/admin_desktop.png)
+- [검증 기록과 범위](../eval/results/dark_theme_review/verification.json)
+
+아래의 밝은 화면과 초록색 강조는 2026-10-20의 1차 개선 기록이다. 당시 결과를 보존하며 현재 테마의 근거와 구분한다.
+
 ## 바뀐 점
 
 | Before | After | 이유 |

@@ -3,9 +3,12 @@
 **제공된 Base AI Agent의 대상 확인·답변 검증·관리자 화면 개선**
 
 - 과제: SKALA AI Mini-Project 1번 — 제공된 Base AI Agent 개선
-- 작성일: 2026-10-20
+- 소속: **SKALA 광주 2반**
+- 고유번호 / 이름: **G065 / 정인제**
+- 작성일: 2026-10-20 · 최종 보고서 안내 반영: 2026-10-21
 - 저장소: [jij0128/incident-response-agent](https://github.com/jij0128/incident-response-agent)
 - 기준: 원본 `0672d14`, 구현 및 화면 개선 `af02f56`. 실험마다 실제 실행 소스 해시를 별도 보관했다.
+- 추가 화면 변경: 2026-10-21 검정·흰색 다크 테마 적용. 진단 로직과 기존 실험 조건은 변경하지 않았다.
 
 ## 1. 프로젝트 개요
 
@@ -21,7 +24,7 @@
 |---|---|
 | 기존 제공 기능 | Vue CDN 채팅 UI, FastAPI API/프록시, LangGraph 계획·조사·재계획·분석·작성 흐름, MCP Tool/Resource/Prompt, SSE, SQLite 세션, Ollama/OpenAI/Fake 교체, LangSmith 추적 코드 |
 | 직접 개선한 부분 | 미등록 대상 확인, 근거 종류와 도구 조회 범위 구분, 퍼센트 검사, 반복 실패 시 수집 상태 안내, 빈 스트림 업데이트 처리, 관리자 인증·조회 화면, 사용자 응답에서 내부 프롬프트 분리, 채팅 사용성 개선, 회귀 테스트와 비교 실험 |
-| 이번에 추가하지 않은 부분 | MCP의 별도 네트워크 서비스화, RAG/벡터 DB, 운영 로그·배포 이력 수집, 실제 조치 실행, 사용자별 계정/권한 관리 |
+| 이번에 추가하지 않은 부분 | MCP의 별도 네트워크 서비스화, RAG/벡터 DB, 운영 로그·배포 이력 수집, 실제 조치 실행, 사용자별 계정/권한 관리, LLM-as-a-Judge |
 
 RAG와 MCP 서비스 분리는 개선 후보의 예시로 이해했다. 이번에 재현한 문제는 대상 확인과 근거 해석·검증 경계에 있어 이를 우선했다. 기존 프레임워크 기능을 새로 구현한 성과로 계산하지 않는다.
 
@@ -55,6 +58,38 @@ flowchart LR
 | SQLite | 프로세스 밖에 대화 저장. 화면의 새 대화는 새 세션을 만들며 기존 DB를 삭제하지 않는다. |
 | LangSmith | 추적을 켠 요청의 실행 트리와 지표 저장·조회. 관리자 조회와 사용자 진단을 구분한다. |
 | unittest·Node test | Python API/그래프와 프론트 이벤트 처리 회귀 검사. Node는 테스트 실행에만 필요하다. |
+
+### 제출 안내의 기술 항목별 적용 범위
+
+아래는 제출 안내에 제시된 기술과 실제 코드의 대응이다. 기술 목록 전체를 신규 구현했다는 의미가 아니다.
+
+| 안내 항목 | 적용 상태와 코드 근거 |
+|---|---|
+| Multi-Agent & LangGraph | 제공된 Supervisor 방식의 상태 그래프에서 계획·조사·분석·작성·검증 역할을 노드로 분리한다. `replan_check`가 조사로 돌아가는 재조사 분기와 검증 후 재작성 분기를 제어한다. 이번에는 진입 대상 확인과 검증·실패 처리를 보완했다. 독립적으로 협업하는 전문 서브에이전트를 새로 만든 것은 아니다. |
+| MCP | 기존 Tool·Resource·Prompt를 활용한다. `agent/mcp_client.py`가 두 stdio subprocess에 연결하며 `mcp_server.py`가 모의 모니터링과 runbook을 제공한다. 독립 HTTP 서비스로 배포하지 않았다. |
+| RAG·Vector DB | **미구현.** 현재는 장애 유형에 따라 정적 runbook Resource를 선택·주입한다. 임베딩·벡터 DB·의미 검색은 없다. |
+| 모듈화·의존성 주입 | 기존 `SupervisorDeps`에 모델·MCP·세션 저장소를 담고 `build_graph`에서 `functools.partial`로 노드에 주입한다. 테스트에서 모의 의존성을 사용한다. 신규 근거 처리 로직은 `agent/grounding.py`로 공통화했다. |
+| 단위·회귀 테스트 | Python 23개와 프론트 이벤트 8개 통과. 규칙 비교, 실제 모델 확인, 브라우저 확인을 별도로 기록했다. 모든 테스트가 실모델을 호출하는 것은 아니다. |
+| LangSmith·평가 | 기존 트레이싱을 활용한 관리자 조회를 추가했다. **LLM-as-a-Judge는 미구현.** 현재 자동 검수는 형식·퍼센트 출처 규칙이며, 실모델 답변은 수동으로 검토했다. |
+
+### 진단 내부 흐름
+
+```mermaid
+flowchart LR
+    T[대상 확인] -->|통과| R[요청 분류]
+    T -->|미등록 포함| C[확인 안내 후 종료]
+    R -->|일반 대화| Chat[일반 답변]
+    R -->|진단| P[계획]
+    P --> G[작업 정리]
+    G --> S[조사]
+    S --> RC[충분성 확인]
+    RC -->|추가 조사| S
+    RC -->|충분| A[분석]
+    A --> W[작성]
+    W --> V[형식·퍼센트 검수]
+    V -->|재작성 필요| W
+    V -->|통과 또는 3회 실패 처리| F[최종 답변 또는 수집 상태 안내]
+```
 
 UI와 데이터를 제공하는 API를 분리하는 것이 수업의 주요 목표였다. 현재 브라우저는 8600의 프록시를 통해 같은 출처로 요청한다. 브라우저가 8100을 직접 호출하는 구조가 아니므로 포트가 다르다는 이유만으로 CORS 허용을 추가하지 않았다.
 
@@ -97,7 +132,7 @@ v2 그래프 앞에 `target_check`를 추가했다. 명시된 서비스/호스�
 
 예시 질문, 여러 줄 입력, 새 대화, 답변 복사를 추가했다. 전송 중 중복 submit과 한글 입력 조합 중 Enter를 막고, 연결 실패를 안내하며 질문을 다시 입력할 수 있게 했다. 검증 전 초안과 최종 답변을 구분하고 완료된 단계에 계속 대기 표시를 하지 않는다. 사용자가 위쪽 내용을 읽고 있으면 자동 스크롤을 멈춘다.
 
-채팅과 관리자 화면을 밝은 중립색·초록색으로 맞췄고, 작은 화면 배치와 키보드 포커스·모션 감소 설정을 반영했다. [프론트엔드 개선 기록](frontend_improvements.md)에 화면과 구현 범위를 남겼다.
+1차 개선에서는 채팅과 관리자 화면을 밝은 중립색·초록색으로 맞췄고, 작은 화면 배치와 키보드 포커스·모션 감소 설정을 반영했다. 이후 2026-10-21 사용자 요청으로 검정·흰색 중심의 다크 테마로 변경했다. 화면 구조와 JavaScript·API·진단 로직을 유지하고 배경·패널·입력·버튼·초점·상태 색상을 공통 변수로 정리했다. [프론트엔드 개선 기록](frontend_improvements.md)에 변경 시점별 화면과 검증 범위를 남겼다.
 
 ## 5. 검증 조건과 결과
 
@@ -138,9 +173,26 @@ v2 그래프 앞에 `target_check`를 추가했다. 명시된 서비스/호스�
 - 조회 범위 보완 후 화면에서 현재 CPU 94.3%와 알림 91%를 구분했다. 새 UI에서는 현재 CPU 90.7%와 알림 91%를 구분한 응답, 검증 전 초안 → 최종 답변 전환, 복사·Enter·새 대화를 확인했다. 서로 다른 모의 조회이므로 수치 자체를 성능 비교에 쓰지 않는다.
 - 작은 화면의 실제 관측 CSS 폭 433px에서 가로 넘침이 없었다. 실제 휴대폰이나 전체 브라우저 호환성 검사까지 수행한 것은 아니다.
 
-![새 채팅 시작 화면](../eval/results/frontend_review/chat_desktop.jpg)
+현재 다크 테마(2026-10-21):
+
+![현재 다크 테마 채팅 시작 화면](../eval/results/dark_theme_review/chat_desktop.png)
+
+다크 테마 적용 후 프론트 이벤트 8개 재검사와 실제 Ollama 등록 질문·작은 화면의 미등록 확인 안내를 확인했다. 관리자 표·상세·실행 트리는 외부 전송 없는 별도 로컬 모의 데이터로 확인했다. [검증 범위](../eval/results/dark_theme_review/verification.json)에 기록했으며 새 모델 성능 비교나 실제 LangSmith 재연동 실험으로 해석하지 않는다.
+
+1차 화면 개선 당시 기록(2026-10-20):
+
+![1차 채팅 시작 화면](../eval/results/frontend_review/chat_desktop.jpg)
 
 ![실제 Ollama 응답 화면](../eval/results/frontend_review/chat_result.jpg)
+
+### 주요 기능 시연 시나리오
+
+| 입력 / 화면 | 기대 동작과 증거 |
+|---|---|
+| `payments-service 결제 응답이 느려지고 CPU가 치솟았어요, 원인 확인해주세요.` | 등록 대상의 지표·runbook 조회 후 사실 / 추가 확인 / 조건부 권고를 구분한다. [다크 테마의 실제 Ollama 답변](../eval/results/dark_theme_review/chat_result.png) |
+| `billing-service 응답이 느려요. 원인 확인해주세요.` | 다른 서비스로 대체하지 않고 시스템명 확인을 요청한다. [현재 화면](../eval/results/dark_theme_review/chat_clarification.png) |
+| `payments-service와 billing-service 둘 다 응답이 느려요. 원인 확인해주세요.` | 미등록 대상을 먼저 확인하며 진단을 보류한다. [실제 OpenAI 검증 기록](../eval/results/openai_check.md) |
+| 관리자 요청 상세 | 검증 이력·실행 트리·프롬프트를 표시한다. [현재 테마 확인 화면](../eval/results/dark_theme_review/admin_desktop.png)은 로컬 모의 데이터이며 실제 LangSmith 연동 증거는 아래 5.4절과 구분한다. |
 
 ### 5.4 관리자 LangSmith 연동
 
@@ -215,10 +267,29 @@ LANGCHAIN_TRACING_V2=false LANGSMITH_TRACING=false \
 .venv/bin/python3 eval/check_openai.py --run-paid-check
 ```
 
-제출 예정일은 2026-10-22 오후 1시이며 Git 주소와 외부 접근 가능한 결과 보고서 주소를 공유 시트에 등록한다. 커밋·푸시와 공유 시트 작성은 사용자가 수행한다. 이 파일을 푸시한 후 보고서 주소는 `https://github.com/jij0128/incident-response-agent/blob/main/doc/PROJECT_REPORT.md`이다. 발표자료와 대본은 [발표 폴더](presentation/)에 둔다.
+### 최종 제출 및 발표
+
+- **제출 마감: 2026-10-22(목) 13:00, 한국 시간.** 지정된 Google Sheet에 최종 보고서 URL과 소스 코드 저장소 URL을 등록한다.
+- 최종 보고서: [GitHub 보고서](https://github.com/jij0128/incident-response-agent/blob/main/doc/PROJECT_REPORT.md)
+- 소스 코드: [GitHub 저장소](https://github.com/jij0128/incident-response-agent)
+- **발표 시작: 2026-10-22(목) 13:10부터, 개인별 5분.** 본인 자리에서 Zoom 화면 공유로 진행한다. 개인 순서와 Zoom 공유 방법은 후속 안내를 따른다.
+- **발표 자료는 자율 선택**이다. 이 보고서, Apple Pages 요약 자료, 시연을 사용할 수 있으며 별도 PPT 제출을 필수로 해석하지 않는다. [5분 대본과 예상 질문](presentation/SPEAKER_NOTES.md)을 준비했다.
+- 커밋·푸시와 공유 시트 작성은 사용자가 수행한다. 최신 로컬 수정은 푸시해야 위 링크에 반영된다. 제출 전 로그아웃 또는 시크릿 창에서도 보고서·그림·소스가 열리는지 확인한다.
+
+### 필수 항목 위치
+
+| 필수 항목 | 이 보고서에서 확인할 위치 |
+|---|---|
+| 표지 및 소속 정보 | 첫머리의 SKALA 광주 2반 / G065 / 정인제 |
+| 문제 개선 및 신규 구현 사항 | 1·2·4절 |
+| 적용 기술 요소 | 3절의 서비스 구조·기술 역할·적용 범위 |
+| 구현 결과·흐름도·시연 | 3절 Mermaid 흐름도, 5절 결과표·화면·시연 시나리오 |
+| 한계·트레이드오프·향후 개선·교훈 | 6·7절 |
+
 
 ## 9. 근거 자료
 
+- 최신 제출·발표 안내: 2026-10-21 사용자 제공 공지. 외부 접근 가능한 링크, 필수 항목 5개, 10월 22일 13:00 제출·13:10 발표 시작·개인별 5분·자료 자율 선택을 적용했다.
 - 과제 안내: 제공 강의자료 `15-01-AI Mini-Project.pdf` PDF 3페이지(일정), 13페이지(평가), 교수님 전사문 및 판서. 강의 원문·녹취는 저장소에 재배포하지 않는다.
 - [규칙 비교](../eval/results/rule_comparison.md), [규칙 원시 결과](../eval/results/rule_comparison.json)
 - [실제 Ollama 비교](../eval/results/ollama_comparison.md), [원시 결과](../eval/results/ollama_comparison.json), [후속 답변 검토](../eval/results/ollama_review.md)
