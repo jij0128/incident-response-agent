@@ -230,3 +230,10 @@ LANGCHAIN_TRACING_V2=false LANGSMITH_TRACING=false .venv/bin/python3 -m unittest
 - [실제 Ollama 비교](eval/results/ollama_comparison.md)
 - [실제 OpenAI 검증](eval/results/openai_check.md)
 - [자동 테스트](tests/)
+
+## 원본 제공 문서
+
+- [원본 프로젝트 설명](doc/README.md)
+- [Ollama 사용 안내](doc/manual_ollma.md)
+- [OpenAI 사용 안내](doc/manual_openai.md)
+- [회귀 테스트 질문](doc/regression_test_queries.md)

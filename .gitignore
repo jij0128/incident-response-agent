@@ -8,8 +8,8 @@ __pycache__/
 # Local presentation materials (report remains tracked)
 /doc/presentation/
 
-# Local working notes and auxiliary documents
+# Local working notes added during the project
 /AGENTS.md
-/doc/*
-!/doc/PROJECT_REPORT.md
+/doc/DAY2_STATUS.md
+/doc/frontend_improvements.md
 /eval/results/final_checks.json

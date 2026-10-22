@@ -283,5 +283,5 @@ LANGCHAIN_TRACING_V2=false LANGSMITH_TRACING=false \
 - [실제 브라우저 검증](../eval/results/ui_verification/README.md)
 - [현재 화면 검증](../eval/results/dark_theme_review/verification.json)
 - [실제 OpenAI 최종 검증](../eval/results/openai_check.md)
-- [자동 회귀 테스트](../tests/)
+- [자동 회귀 테스트](../tests/), [회귀 테스트 질문](regression_test_queries.md)
 - [Emil Kowalski의 디자인 엔지니어링 스킬](https://github.com/emilkowalski/skills/blob/main/skills/emil-design-eng/SKILL.md): 화면 개선 참고. 본 프로젝트에 스킬을 전역 설치하거나 해당 저장소의 구현을 통째로 가져오지는 않았다.
