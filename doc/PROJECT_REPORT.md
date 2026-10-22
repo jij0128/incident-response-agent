@@ -129,7 +129,7 @@ v2 그래프 앞에 `target_check`를 추가했다. 명시된 서비스/호스�
 
 예시 질문, 여러 줄 입력, 새 대화, 답변 복사를 추가했다. 전송 중 중복 submit과 한글 입력 조합 중 Enter를 막고, 연결 실패를 안내하며 질문을 다시 입력할 수 있게 했다. 검증 전 초안과 최종 답변을 구분하고 완료된 단계에 계속 대기 표시를 하지 않는다. 사용자가 위쪽 내용을 읽고 있으면 자동 스크롤을 멈춘다.
 
-1차 개선에서는 채팅과 관리자 화면을 밝은 중립색·초록색으로 맞췄고, 작은 화면 배치와 키보드 포커스·모션 감소 설정을 반영했다. 이후 2026-10-21 검정·흰색 중심의 다크 테마로 변경했다. 화면 구조와 JavaScript·API·진단 로직을 유지하고 배경·패널·입력·버튼·초점·상태 색상을 공통 변수로 정리했다. [프론트엔드 개선 기록](frontend_improvements.md)에 변경 시점별 화면과 검증 범위를 남겼다.
+1차 개선에서는 채팅과 관리자 화면을 밝은 중립색·초록색으로 맞췄고, 작은 화면 배치와 키보드 포커스·모션 감소 설정을 반영했다. 이후 2026-10-21 검정·흰색 중심의 다크 테마로 변경했다. 화면 구조와 JavaScript·API·진단 로직을 유지하고 배경·패널·입력·버튼·초점·상태 색상을 공통 변수로 정리했다. 변경 후 화면과 검증 범위는 [다크 테마 검증 기록](../eval/results/dark_theme_review/verification.json)에 남겼다.
 
 ## 5. 검증 조건과 결과
 
@@ -281,7 +281,7 @@ LANGCHAIN_TRACING_V2=false LANGSMITH_TRACING=false \
 - [실제 Ollama 비교](../eval/results/ollama_comparison.md), [원시 결과](../eval/results/ollama_comparison.json), [후속 답변 검토](../eval/results/ollama_review.md)
 - [도구 조회 범위 후속 확인](../eval/results/tool_scope_check.md)
 - [실제 브라우저 검증](../eval/results/ui_verification/README.md)
-- [프론트엔드 개선·검증](frontend_improvements.md)
+- [현재 화면 검증](../eval/results/dark_theme_review/verification.json)
 - [실제 OpenAI 최종 검증](../eval/results/openai_check.md)
-- [회귀 테스트 질문](regression_test_queries.md)
+- [자동 회귀 테스트](../tests/)
 - [Emil Kowalski의 디자인 엔지니어링 스킬](https://github.com/emilkowalski/skills/blob/main/skills/emil-design-eng/SKILL.md): 화면 개선 참고. 본 프로젝트에 스킬을 전역 설치하거나 해당 저장소의 구현을 통째로 가져오지는 않았다.

@@ -8,7 +8,7 @@ SKALA AI Mini-Project의 **1번 과제: 제공된 Base AI Agent 개선**으로 �
 
 **SKALA 광주 2반 · G065 · 정인제**
 
-결과와 근거는 [프로젝트 결과 보고서](doc/PROJECT_REPORT.md)와 [완료 상태·제출 준비](doc/DAY2_STATUS.md)에 정리했습니다. 발표자료와 대본은 로컬에서 별도로 관리합니다.
+프로젝트 결과와 적용 기술, 개선 전후 비교, 한계는 [최종 보고서](doc/PROJECT_REPORT.md)에 정리했습니다.
 
 ## 개선한 문제
 
@@ -28,9 +28,9 @@ SKALA AI Mini-Project의 **1번 과제: 제공된 Base AI Agent 개선**으로 �
 
 채팅 시작 화면에 예시 질문과 여러 줄 입력을 추가하고, 진행 중·검증 전 초안·최종 답변·시스템명 확인 요청을 구분했습니다. 중복 전송과 한글 조합 중 Enter를 처리하고, 연결 오류 안내·질문 다시 입력·답변 복사·새 대화·읽던 위치를 유지하는 스크롤 동작을 보완했습니다. 관리자 화면도 같은 색상과 간격으로 정리했습니다.
 
-2026-10-21 채팅·관리자를 검정·흰색 중심의 다크 테마로 변경했습니다. 현재 화면과 모의 관리자 표 확인 자료는 [다크 테마 변경 기록](doc/frontend_improvements.md#현재-테마--2026-10-21)에 있습니다. 기존 화면 동작과 백엔드 로직은 유지했습니다.
+2026-10-21 채팅·관리자를 검정·흰색 중심의 다크 테마로 변경했습니다. 현재 화면과 모의 관리자 표 확인 자료는 [다크 테마 검증 기록](eval/results/dark_theme_review/verification.json)에 있습니다. 기존 화면 동작과 백엔드 로직은 유지했습니다.
 
-[프론트엔드 개선 내용과 새 화면](doc/frontend_improvements.md)에 변경 이유·테스트·한계를 기록했습니다. Vue CDN 구조를 유지하므로 별도 npm 설치나 빌드는 필요하지 않습니다. 프론트 동작 테스트는 `node --test tests/frontend_chat.test.cjs`로 실행하며 8개 통과했습니다. 화면 변경은 모델의 정확도나 추론 속도 개선과 구분합니다.
+화면 개선 내용과 캡처·검증 범위는 [최종 보고서](doc/PROJECT_REPORT.md#53-자동-테스트와-실제-브라우저)에 기록했습니다. Vue CDN 구조를 유지하므로 별도 npm 설치나 빌드는 필요하지 않습니다. 프론트 동작 테스트는 `node --test tests/frontend_chat.test.cjs`로 실행하며 8개 통과했습니다. 화면 변경은 모델의 정확도나 추론 속도 개선과 구분합니다.
 
 ## 서비스 구조
 
@@ -223,13 +223,10 @@ LANGCHAIN_TRACING_V2=false LANGSMITH_TRACING=false .venv/bin/python3 -m unittest
 - **비용과 비교:** 로컬 모의 데이터에는 변동이 있습니다. 실제 모델의 개선 전후 비교에는 같은 데이터와 입력을 고정해야 합니다. 코드의 `cost_usd`는 단순화된 가상 단가 계산이므로 실제 청구 금액과 다릅니다.
 - **교훈:** 확인 노드를 추가했을 때 상태 변경 없는 결과가 `None`으로 전달되어 스트리밍이 끊어졌습니다. 그래프 단위 검사뿐 아니라 실제 화면이 사용하는 SSE API까지 회귀 테스트해야 함을 확인했습니다.
 
-## 상세 문서
+## 보고서와 검증 자료
 
-- [프로젝트 결과 보고서](doc/PROJECT_REPORT.md)
-- [2일차 완료 상태와 3일차 준비](doc/DAY2_STATUS.md)
+- [최종 보고서](doc/PROJECT_REPORT.md)
+- [개선 전후 규칙 비교](eval/results/rule_comparison.md)
+- [실제 Ollama 비교](eval/results/ollama_comparison.md)
 - [실제 OpenAI 검증](eval/results/openai_check.md)
-- [제공된 베이스 프로젝트 설명](doc/README.md)
-- [회귀 테스트 질문 및 개선 확인 기록](doc/regression_test_queries.md)
-- [Ollama 사용 안내](doc/manual_ollma.md)
-- [OpenAI 사용 안내](doc/manual_openai.md)
 - [자동 테스트](tests/)
