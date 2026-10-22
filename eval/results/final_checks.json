@@ -19,26 +19,11 @@
       "raw_result": "openai_check.json"
     },
     "local_markdown_links": {
-      "checked_at": "2026-10-21T16:30:59+09:00",
-      "checked_files": 6,
-      "local_targets_checked": 75,
-      "missing": []
-    },
-    "presentation": {
-      "slides": 12,
-      "speaker_note_parts": 12,
-      "editable_tables": 6,
-      "package_layout_import_checks": "passed",
-      "individual_final_slide_renders_reviewed": 12,
-      "native_powerpoint_opened": false
-    },
-    "pages": {
-      "native_app_saved_and_reopened": true,
-      "pages": 12,
-      "text_and_tables_editable": true,
-      "native_pdf_export_reviewed_pages": 12,
-      "rasterizer": "macOS PDFKit",
-      "filename": "doc/presentation/incident-response-agent.pages"
+      "checked_at": "2026-10-22T09:12:27+09:00",
+      "checked_files": 5,
+      "local_targets_checked": 67,
+      "missing": [],
+      "scope": "public documents; local-only presentation links excluded"
     },
     "dark_theme": {
       "checked_at": "2026-10-21T16:16:45+09:00",
@@ -65,9 +50,7 @@
       "updated_files": [
         "README.md",
         "doc/PROJECT_REPORT.md",
-        "doc/DAY2_STATUS.md",
-        "doc/presentation/README.md",
-        "doc/presentation/SPEAKER_NOTES.md"
+        "doc/DAY2_STATUS.md"
       ],
       "binary_presentation_changed": false,
       "anonymous_public_url_check": {
@@ -93,18 +76,26 @@
         "Git commit/push",
         "Shared sheet submission"
       ]
+    },
+    "submission_wording_cleanup": {
+      "checked_at": "2026-10-22T09:12:27+09:00",
+      "document_scan": "passed",
+      "app_logic_changed": false,
+      "model_api_calls": 0
+    },
+    "publication_scope": {
+      "checked_at": "2026-10-22T09:13:23+09:00",
+      "public_artifacts": "source code and Markdown report",
+      "presentation_materials": "local only; excluded from Git tracking",
+      "private_validation_record": "kept with local presentation materials"
     }
   },
   "artifact_sha256": {
     "eval/check_openai.py": "23c1f48f88855f3a4a18d78c82ef3922d9caf815d74053607349bb18d902f9d4",
     "eval/results/openai_check.json": "208e8d403b61ce618bd6d816cdce2ddf18c6ba8f6426bce57f66e436c9136554",
-    "eval/results/openai_check.md": "6ff7fa8f5e86339562253baa7481937e751fc5a0853712a3e03caa856caddec3",
-    "doc/PROJECT_REPORT.md": "044a3754d9b14be7f4911d4ae1903fcdb2cec509a43ffe83c89e3661f81c21ca",
-    "doc/DAY2_STATUS.md": "7e697af70592ffea422ce1b04f516c76fdb8d0940168e0bfef176aa6330b11bc",
-    "doc/presentation/incident-response-agent.pptx": "d4e015f484f7cb3b1b449574eaedc20212088ab03860027f58ffa61d87e5fed6",
-    "doc/presentation/SPEAKER_NOTES.md": "022b1494e3f83c0551422e987b3564531b4aa49e07e65dec77cdc6ab98b6685a",
-    "doc/presentation/incident-response-agent.pages": "d1456734bdd0ca17e933eafb69782fda048e7db2cb7738d17c94cb796efb005d",
-    "doc/presentation/README.md": "881b0bf7eff1955d0a3a9f4b82cc852c0ea60753c7f7d7fb8a987f8ff7bd1799"
+    "eval/results/openai_check.md": "385171c5a02c84e13476a7379792b008f58b22f6b1dbd5f95e850e92fd60dff7",
+    "doc/PROJECT_REPORT.md": "fe4ebc6fa28a8ba55e6aeace11e2bd285cefd033399038ed39e0880a0211cba4",
+    "doc/DAY2_STATUS.md": "3c4af8fae359a47cca6e3cff3721fe8eaf6d2185b197c4def9e3f63522aa751e"
   },
   "not_performed": [
     "Git commit/push",
@@ -112,6 +103,6 @@
     "Final submission",
     "PowerPoint application review"
   ],
-  "artifact_hashes_checked_at": "2026-10-21T16:30:59+09:00",
-  "artifact_hashes_note": "등록 산출물 9개 SHA-256 대조 완료. 최신 제출 안내·표지·5분 대본 변경 문서의 해시를 갱신했다. 모델·앱 테스트 실행 시각은 checks 및 개별 기록을 따르며 이번 문서 수정으로 재실행하지 않았다."
+  "artifact_hashes_checked_at": "2026-10-22T09:13:23+09:00",
+  "artifact_hashes_note": "공개 산출물 5개 SHA-256 대조 완료. 발표자료·대본·관련 검증 기록은 로컬 폴더에 별도 보관한다. 모델·앱 테스트의 실행 시각과 범위는 기존 기록을 따른다."
 }

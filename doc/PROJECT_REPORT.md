@@ -5,10 +5,7 @@
 - 과제: SKALA AI Mini-Project 1번 — 제공된 Base AI Agent 개선
 - 소속: **SKALA 광주 2반**
 - 고유번호 / 이름: **G065 / 정인제**
-- 작성일: 2026-10-20 · 최종 보고서 안내 반영: 2026-10-21
 - 저장소: [jij0128/incident-response-agent](https://github.com/jij0128/incident-response-agent)
-- 기준: 원본 `0672d14`, 구현 및 화면 개선 `af02f56`. 실험마다 실제 실행 소스 해시를 별도 보관했다.
-- 추가 화면 변경: 2026-10-21 검정·흰색 다크 테마 적용. 진단 로직과 기존 실험 조건은 변경하지 않았다.
 
 ## 1. 프로젝트 개요
 
@@ -132,7 +129,7 @@ v2 그래프 앞에 `target_check`를 추가했다. 명시된 서비스/호스�
 
 예시 질문, 여러 줄 입력, 새 대화, 답변 복사를 추가했다. 전송 중 중복 submit과 한글 입력 조합 중 Enter를 막고, 연결 실패를 안내하며 질문을 다시 입력할 수 있게 했다. 검증 전 초안과 최종 답변을 구분하고 완료된 단계에 계속 대기 표시를 하지 않는다. 사용자가 위쪽 내용을 읽고 있으면 자동 스크롤을 멈춘다.
 
-1차 개선에서는 채팅과 관리자 화면을 밝은 중립색·초록색으로 맞췄고, 작은 화면 배치와 키보드 포커스·모션 감소 설정을 반영했다. 이후 2026-10-21 사용자 요청으로 검정·흰색 중심의 다크 테마로 변경했다. 화면 구조와 JavaScript·API·진단 로직을 유지하고 배경·패널·입력·버튼·초점·상태 색상을 공통 변수로 정리했다. [프론트엔드 개선 기록](frontend_improvements.md)에 변경 시점별 화면과 검증 범위를 남겼다.
+1차 개선에서는 채팅과 관리자 화면을 밝은 중립색·초록색으로 맞췄고, 작은 화면 배치와 키보드 포커스·모션 감소 설정을 반영했다. 이후 2026-10-21 검정·흰색 중심의 다크 테마로 변경했다. 화면 구조와 JavaScript·API·진단 로직을 유지하고 배경·패널·입력·버튼·초점·상태 색상을 공통 변수로 정리했다. [프론트엔드 개선 기록](frontend_improvements.md)에 변경 시점별 화면과 검증 범위를 남겼다.
 
 ## 5. 검증 조건과 결과
 
@@ -196,13 +193,13 @@ v2 그래프 앞에 `target_check`를 추가했다. 명시된 서비스/호스�
 
 ### 5.4 관리자 LangSmith 연동
 
-사용자 승인 아래 `capstone-all-total-admin-check`에 모의 일반 요청 1건과 SSE 요청 1건을 저장하고 관리자 API로 조회했다. 각 요청에서 Fake 추정 토큰 217개, 실행 노드 42개, 검증 반려 후 재작성·합격 이력을 확인했다. 화면에 보인 평균 약 0.75초·합계 434토큰은 **모의 백엔드의 연동 결과**이며 실제 모델의 성능·사용량이 아니다.
+`capstone-all-total-admin-check`에 모의 일반 요청 1건과 SSE 요청 1건을 저장하고 관리자 API로 조회했다. 각 요청에서 Fake 추정 토큰 217개, 실행 노드 42개, 검증 반려 후 재작성·합격 이력을 확인했다. 화면에 보인 평균 약 0.75초·합계 434토큰은 **모의 백엔드의 연동 결과**이며 실제 모델의 성능·사용량이 아니다.
 
 새 관리자 UI 확인 시 현재 설정 프로젝트 `capstone-all-total`의 조회 결과는 0건이었다. 이전 모의 기록 프로젝트와 다르며, 기록이 있는 표·트리의 새 스타일은 실제 데이터로 시각 확인하지 못했다. 검증 과정에서 추적을 켜거나 모의 요청 외의 새 기록을 전송하지 않았다.
 
 ### 5.5 실제 OpenAI 최종 검증
 
-2026-10-20 사용자 승인 후 `eval/check_openai.py`로 등록·미등록·혼합 질문을 확인했다. 실제 OpenAI(gpt-4o-mini/gpt-4o), 실제 MCP stdio, FastAPI ASGI SSE 경로를 사용했다. 브라우저·프록시는 포함하지 않았고 임시 SQLite를 사용해 기존 서버와 대화 DB를 유지했다. LangSmith 추적은 껐다.
+2026-10-20 `eval/check_openai.py`로 등록·미등록·혼합 질문을 확인했다. 실제 OpenAI(gpt-4o-mini/gpt-4o), 실제 MCP stdio, FastAPI ASGI SSE 경로를 사용했다. 브라우저·프록시는 포함하지 않았고 임시 SQLite를 사용해 기존 서버와 대화 DB를 유지했다. LangSmith 추적은 껐다.
 
 | 질문 | 결과 | API 호출 | 소요 시간 |
 |---|---|---:|---:|
@@ -263,18 +260,9 @@ bash sh/run_frontend.sh
 node --test tests/frontend_chat.test.cjs
 LANGCHAIN_TRACING_V2=false LANGSMITH_TRACING=false \
   .venv/bin/python3 -m unittest discover -s tests -v
-# 실제 과금·외부 전송을 승인한 경우에만 실행
+# 실제 과금·모의 데이터 외부 전송 발생
 .venv/bin/python3 eval/check_openai.py --run-paid-check
 ```
-
-### 최종 제출 및 발표
-
-- **제출 마감: 2026-10-22(목) 13:00, 한국 시간.** 지정된 Google Sheet에 최종 보고서 URL과 소스 코드 저장소 URL을 등록한다.
-- 최종 보고서: [GitHub 보고서](https://github.com/jij0128/incident-response-agent/blob/main/doc/PROJECT_REPORT.md)
-- 소스 코드: [GitHub 저장소](https://github.com/jij0128/incident-response-agent)
-- **발표 시작: 2026-10-22(목) 13:10부터, 개인별 5분.** 본인 자리에서 Zoom 화면 공유로 진행한다. 개인 순서와 Zoom 공유 방법은 후속 안내를 따른다.
-- **발표 자료는 자율 선택**이다. 이 보고서, Apple Pages 요약 자료, 시연을 사용할 수 있으며 별도 PPT 제출을 필수로 해석하지 않는다. [5분 대본과 예상 질문](presentation/SPEAKER_NOTES.md)을 준비했다.
-- 커밋·푸시와 공유 시트 작성은 사용자가 수행한다. 최신 로컬 수정은 푸시해야 위 링크에 반영된다. 제출 전 로그아웃 또는 시크릿 창에서도 보고서·그림·소스가 열리는지 확인한다.
 
 ### 필수 항목 위치
 
@@ -289,8 +277,6 @@ LANGCHAIN_TRACING_V2=false LANGSMITH_TRACING=false \
 
 ## 9. 근거 자료
 
-- 최신 제출·발표 안내: 2026-10-21 사용자 제공 공지. 외부 접근 가능한 링크, 필수 항목 5개, 10월 22일 13:00 제출·13:10 발표 시작·개인별 5분·자료 자율 선택을 적용했다.
-- 과제 안내: 제공 강의자료 `15-01-AI Mini-Project.pdf` PDF 3페이지(일정), 13페이지(평가), 교수님 전사문 및 판서. 강의 원문·녹취는 저장소에 재배포하지 않는다.
 - [규칙 비교](../eval/results/rule_comparison.md), [규칙 원시 결과](../eval/results/rule_comparison.json)
 - [실제 Ollama 비교](../eval/results/ollama_comparison.md), [원시 결과](../eval/results/ollama_comparison.json), [후속 답변 검토](../eval/results/ollama_review.md)
 - [도구 조회 범위 후속 확인](../eval/results/tool_scope_check.md)

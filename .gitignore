@@ -4,3 +4,6 @@ session.db
 __pycache__/
 *.log
 .presentation-build/
+
+# Local presentation materials (report remains tracked)
+/doc/presentation/

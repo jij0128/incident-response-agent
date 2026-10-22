@@ -8,7 +8,7 @@ SKALA AI Mini-Project의 **1번 과제: 제공된 Base AI Agent 개선**으로 �
 
 **SKALA 광주 2반 · G065 · 정인제**
 
-결과와 근거는 [프로젝트 결과 보고서](doc/PROJECT_REPORT.md), [발표자료·발표 대본](doc/presentation/), [2일차 완료 및 3일차 준비](doc/DAY2_STATUS.md)에 정리했습니다.
+결과와 근거는 [프로젝트 결과 보고서](doc/PROJECT_REPORT.md)와 [완료 상태·제출 준비](doc/DAY2_STATUS.md)에 정리했습니다. 발표자료와 대본은 로컬에서 별도로 관리합니다.
 
 ## 개선한 문제
 
@@ -28,7 +28,7 @@ SKALA AI Mini-Project의 **1번 과제: 제공된 Base AI Agent 개선**으로 �
 
 채팅 시작 화면에 예시 질문과 여러 줄 입력을 추가하고, 진행 중·검증 전 초안·최종 답변·시스템명 확인 요청을 구분했습니다. 중복 전송과 한글 조합 중 Enter를 처리하고, 연결 오류 안내·질문 다시 입력·답변 복사·새 대화·읽던 위치를 유지하는 스크롤 동작을 보완했습니다. 관리자 화면도 같은 색상과 간격으로 정리했습니다.
 
-2026-10-21 사용자 요청으로 채팅·관리자를 검정·흰색 중심의 다크 테마로 변경했습니다. 현재 화면과 모의 관리자 표 확인 자료는 [다크 테마 변경 기록](doc/frontend_improvements.md#현재-테마--2026-10-21)에 있습니다. 기존 화면 동작과 백엔드 로직은 유지했습니다.
+2026-10-21 채팅·관리자를 검정·흰색 중심의 다크 테마로 변경했습니다. 현재 화면과 모의 관리자 표 확인 자료는 [다크 테마 변경 기록](doc/frontend_improvements.md#현재-테마--2026-10-21)에 있습니다. 기존 화면 동작과 백엔드 로직은 유지했습니다.
 
 [프론트엔드 개선 내용과 새 화면](doc/frontend_improvements.md)에 변경 이유·테스트·한계를 기록했습니다. Vue CDN 구조를 유지하므로 별도 npm 설치나 빌드는 필요하지 않습니다. 프론트 동작 테스트는 `node --test tests/frontend_chat.test.cjs`로 실행하며 8개 통과했습니다. 화면 변경은 모델의 정확도나 추론 속도 개선과 구분합니다.
 
@@ -124,7 +124,7 @@ python3 -c 'import secrets; print(secrets.token_urlsafe(32))'
 
 추적 기록에는 테스트 질문·답변·프롬프트·실행 정보가 외부 LangSmith 계정으로 전송됩니다. 이 전송 범위를 확인한 뒤 유효한 LangSmith 키와 `LANGCHAIN_TRACING_V2=true`를 설정해 사용합니다. 추적을 켜기 전의 과거 대화는 소급 기록되지 않습니다. 기본 실행 스크립트는 프로젝트를 백엔드에 따라 `capstone-all-total-ollama` 또는 `capstone-all-total-openai`로 지정합니다.
 
-관리자 기능은 모의 응답을 이용한 로컬 화면/API 검증과 실제 LangSmith 저장·조회 통합 검증을 마쳤습니다. 2026-10-20 사용자 승인 아래 `capstone-all-total-admin-check` 프로젝트에 모의 일반 요청과 SSE 요청을 각각 1건 기록했습니다. 각 요청에서 추정 토큰 217개, 실행 노드 42개, 검증 반려 후 재작성·합격 이력을 조회했습니다. 토큰 값은 Fake 백엔드의 문자열 길이 추정치이며 실제 LLM 사용량이 아닙니다. 외부 모델은 호출하지 않았고 일반 채팅의 추적 설정은 변경하지 않았습니다.
+관리자 기능은 모의 응답을 이용한 로컬 화면/API 검증과 실제 LangSmith 저장·조회 통합 검증을 마쳤습니다. 2026-10-20 `capstone-all-total-admin-check` 프로젝트에 모의 일반 요청과 SSE 요청을 각각 1건 기록했습니다. 각 요청에서 추정 토큰 217개, 실행 노드 42개, 검증 반려 후 재작성·합격 이력을 조회했습니다. 토큰 값은 Fake 백엔드의 문자열 길이 추정치이며 실제 LLM 사용량이 아닙니다. 외부 모델은 호출하지 않았고 일반 채팅의 추적 설정은 변경하지 않았습니다.
 
 ## 사용 예시
 
@@ -226,7 +226,6 @@ LANGCHAIN_TRACING_V2=false LANGSMITH_TRACING=false .venv/bin/python3 -m unittest
 ## 상세 문서
 
 - [프로젝트 결과 보고서](doc/PROJECT_REPORT.md)
-- [발표자료와 대본](doc/presentation/)
 - [2일차 완료 상태와 3일차 준비](doc/DAY2_STATUS.md)
 - [실제 OpenAI 검증](eval/results/openai_check.md)
 - [제공된 베이스 프로젝트 설명](doc/README.md)

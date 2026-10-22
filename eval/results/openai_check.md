@@ -2,7 +2,7 @@
 
 - 실행: 2026-10-20 16:33 KST, 구현 기준 `af02f56`
 - 코드: [`eval/check_openai.py`](../check_openai.py), [원시 결과](openai_check.json)
-- 사용자 승인 범위 안에서 실제 OpenAI 호출 4회 수행. 추가 호출·LangSmith 기록 전송 없음.
+- 검증 실행에서 실제 OpenAI 호출 4회 수행. 추가 호출·LangSmith 기록 전송 없음.
 - 모델 응답 버전: `gpt-4o-mini-2024-07-18`, `gpt-4o-2024-08-06`
 
 ## 경로와 조건
