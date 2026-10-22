@@ -13,3 +13,6 @@ __pycache__/
 /doc/DAY2_STATUS.md
 /doc/frontend_improvements.md
 /eval/results/final_checks.json
+
+# macOS Finder metadata
+.DS_Store
